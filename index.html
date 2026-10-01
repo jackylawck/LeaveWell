@@ -39,6 +39,28 @@
     <span id="lockTimer" class="badge badge-red hidden">會話倒數: 180s</span>
   </div>
 
+  <!-- 💡 緊急使用指引（3 步即明） -->
+  <div class="guide-box">
+    <div class="guide-title">
+      <span id="uiGuideTitle">💡 家人緊急應急指南（3 步即用）</span>
+      <button id="btnToggleGuide" class="btn-text-sub">[收起指引]</button>
+    </div>
+    <div id="guideContent" class="guide-content">
+      <div class="guide-step">
+        <span class="step-num">1</span>
+        <div id="uiGuideStep1"><strong>搵備份檔</strong>：找出隨身碟或書房文件夾內之 <code>LeaveWell-Vault-*.json</code> 檔案。</div>
+      </div>
+      <div class="guide-step">
+        <span class="step-num">2</span>
+        <div id="uiGuideStep2"><strong>撳匯入</strong>：點擊底部 <span class="highlight-btn">📥 匯入 JSON 檔案</span> 上傳，首次開啟核對小卡指紋按確認。</div>
+      </div>
+      <div class="guide-step">
+        <span class="step-num">3</span>
+        <div id="uiGuideStep3"><strong>即時查閱</strong>：頂部綠色/藍色區會<strong>即時免密碼顯示</strong>保險經紀電話；如需解鎖手機，於紅色區輸入約定密語或抄寫的 52 碼恢復碼。</div>
+      </div>
+    </div>
+  </div>
+
   <!-- 篡改告警橫額 -->
   <div id="tamperWarning" class="alert-banner">
     <span id="uiTamperAlert">⛔ 安全防禦阻斷：Ed25519 簽名無效！公鑰與本機信任錨不相符，或檔案資料曾遭未授權竄改。請直接致電第一層官方熱線核實。</span>
@@ -215,7 +237,7 @@
     </div>
 
     <div class="btn-row">
-      <button class="btn-pri" id="btnSignExport">✍️️ 簽署並匯出完整 JSON</button>
+      <button class="btn-pri" id="btnSignExport">✍️ 簽署並匯出完整 JSON</button>
     </div>
   </div>
 </div>
