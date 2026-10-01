@@ -1,5 +1,5 @@
 /**
- * app.js - 雙層架構控制器 (自動快取一開即見 + 支援密語解密載入舊檔再編輯)
+ * app.js - 雙層架構控制器 (方案 B：保險箱提示卡版)
  */
 window.LeaveWell = window.LeaveWell || {};
 
@@ -9,7 +9,7 @@ window.LeaveWell = window.LeaveWell || {};
   const { Crypto, I18N } = window.LeaveWell;
   const MAX_FAILS = 5;
   const LOCKOUT_MS = 15 * 60 * 1000;
-  const STORAGE_KEY = "leavewell_saved_vault_v4";
+  const STORAGE_KEY = "leavewell_saved_vault_v41";
 
   const HK_INSURERS = [
     "友邦保險 (AIA)", "保誠保險 (Prudential)", "宏利金融 (Manulife)", "安盛保險 (AXA)",
@@ -23,7 +23,6 @@ window.LeaveWell = window.LeaveWell || {};
   let decryptedPayload = null;
   let lockCountdown = null;
   let currentEditorItems = [];
-  let generatedRecoveryCode = "";
   let hiddenSince = null;
 
   function escapeHtml(str) {
@@ -75,12 +74,8 @@ window.LeaveWell = window.LeaveWell || {};
 
     document.getElementById("uiSecretTitle").innerText = t.secretTitle;
     document.getElementById("uiSecretBadge").innerText = t.secretBadge;
-    document.getElementById("tabUsePass").innerText = t.tabPass;
-    document.getElementById("tabUseRecovery").innerText = t.tabRec;
     document.getElementById("uiPassphraseLabel").innerText = t.passphraseLabel;
     document.getElementById("passphrase").placeholder = t.passphrasePlaceholder;
-    document.getElementById("uiRecoveryLabel").innerText = t.recoveryLabel;
-    document.getElementById("recoveryCodeInput").placeholder = t.recoveryPlaceholder;
     document.getElementById("btnUnlockVault").innerText = t.unlockBtn;
     document.getElementById("btnLockVault").innerText = t.lockBtn;
 
@@ -118,7 +113,7 @@ window.LeaveWell = window.LeaveWell || {};
         lockVault();
 
         document.getElementById("btnExport").disabled = false;
-        alert(currentLang === 'zh' ? "✅ 匯入成功！已顯示第一層名冊，並已在此裝置建立安全快取。" : "✅ Imported successfully! Tier 1 directory loaded and cached.");
+        alert(currentLang === 'zh' ? "✅ 匯入成功！已顯示第一層保險名冊，並已在本機建立快取。" : "✅ Imported successfully! Tier 1 directory loaded.");
       } catch (err) {
         alert((currentLang === 'zh' ? "❌ 匯入失敗：" : "❌ Import failed: ") + err.message);
       } finally {
@@ -156,28 +151,17 @@ window.LeaveWell = window.LeaveWell || {};
     }
     if (!memoryVault) return alert(currentLang === 'zh' ? "請先匯入備份檔案！" : "Please import a backup file first!");
 
-    const isRecoveryMode = !document.getElementById("modeRecoveryBox").classList.contains("hidden");
-    let secretInput = "";
-
-    if (isRecoveryMode) {
-      const rawRc = document.getElementById("recoveryCodeInput").value.trim();
-      if (!rawRc) return alert(currentLang === 'zh' ? "請輸入紙本恢復碼！" : "Enter recovery code!");
-      secretInput = Crypto.base32ToUint8(rawRc);
-      if (secretInput.length !== 32) return alert(currentLang === 'zh' ? "恢復碼格式不正確！" : "Invalid recovery code format!");
-    } else {
-      secretInput = document.getElementById("passphrase").value;
-      if (!secretInput) return alert(currentLang === 'zh' ? "請輸入密語！" : "Enter passphrase!");
-    }
+    const pass = document.getElementById("passphrase").value;
+    if (!pass) return alert(currentLang === 'zh' ? "請輸入密語！" : "Enter passphrase!");
 
     try {
-      decryptedPayload = await Crypto.decryptVault(secretInput, isRecoveryMode, memoryVault.encrypted_vault);
+      decryptedPayload = await Crypto.decryptVault(pass, memoryVault.encrypted_vault);
       renderSecretDetails(decryptedPayload);
 
       document.getElementById("secretLockSection").classList.add("hidden");
       document.getElementById("secretContentSection").classList.remove("hidden");
       document.getElementById("authErrorMsg").style.display = "none";
       document.getElementById("passphrase").value = "";
-      document.getElementById("recoveryCodeInput").value = "";
 
       resetFails();
       startLockTimer(180);
@@ -187,7 +171,7 @@ window.LeaveWell = window.LeaveWell || {};
       errMsg.style.display = "block";
       errMsg.innerText = res.locked 
         ? (currentLang === 'zh' ? `⛔ 連續錯誤達 ${MAX_FAILS} 次，已鎖定 15 分鐘。` : `⛔ Locked for 15 minutes.`)
-        : (currentLang === 'zh' ? `❌ 認證失敗 (${res.fails}/${MAX_FAILS})。密語或恢復碼不符。` : `❌ Auth failed (${res.fails}/${MAX_FAILS}). Mismatch.`);
+        : (currentLang === 'zh' ? `❌ 認證失敗 (${res.fails}/${MAX_FAILS})。密語不正確，請參考保險箱提示卡。` : `❌ Auth failed (${res.fails}/${MAX_FAILS}). Incorrect passphrase.`);
     }
   }
 
@@ -242,14 +226,6 @@ window.LeaveWell = window.LeaveWell || {};
     }, 1000);
   }
 
-  function refreshRecoveryCode() {
-    const bytes = crypto.getRandomValues(new Uint8Array(32));
-    generatedRecoveryCode = Crypto.uint8ToBase32(bytes);
-    const chunks = generatedRecoveryCode.match(/.{1,5}/g) || [];
-    document.getElementById("displayRecoveryCode").innerText = "RC-" + chunks.join("-");
-    document.getElementById("chkRecoveryConfirmed").checked = false;
-  }
-
   function renderEditorItems() {
     const box = document.getElementById("editorItemsList");
     box.innerHTML = "";
@@ -272,22 +248,19 @@ window.LeaveWell = window.LeaveWell || {};
   }
 
   function wipeEditorFields() {
-    ["editPassphrase", "editConfirmPassphrase", "editDevicePin", "editPrimaryEmail", "editMasterNotes",
+    ["editPassphrase", "editConfirmPassphrase", "editPassphraseHint", "editDevicePin", "editPrimaryEmail", "editMasterNotes",
      "inputCustomName", "inputAgentName", "inputAgentPhone", "inputPolicyNum", "inputFileLoc"
     ].forEach(id => {
       const el = document.getElementById(id);
       if (el) el.value = "";
     });
 
-    document.getElementById("chkRecoveryConfirmed").checked = false;
     document.getElementById("editorInsurerSelect").selectedIndex = 0;
     document.getElementById("editorInsurerType").selectedIndex = 0;
     document.getElementById("editorCustomBox").classList.add("hidden");
     
     currentEditorItems = [];
     renderEditorItems();
-    generatedRecoveryCode = "";
-    document.getElementById("displayRecoveryCode").innerText = "尚未生成";
   }
 
   async function loadExistingFileForEditing(e) {
@@ -303,7 +276,7 @@ window.LeaveWell = window.LeaveWell || {};
         const pass = prompt(currentLang === 'zh' ? "請輸入此備份檔的家庭密語以解鎖載入：" : "Enter master passphrase to unlock and edit:");
         if (!pass) return;
 
-        const unlocked = await Crypto.decryptVault(pass, false, parsed.encrypted_vault);
+        const unlocked = await Crypto.decryptVault(pass, parsed.encrypted_vault);
 
         currentEditorItems = unlocked.policies || [];
         renderEditorItems();
@@ -311,6 +284,7 @@ window.LeaveWell = window.LeaveWell || {};
         document.getElementById("editDevicePin").value = unlocked.devicePin || "";
         document.getElementById("editPrimaryEmail").value = unlocked.primaryEmail || "";
         document.getElementById("editMasterNotes").value = unlocked.masterNotes || "";
+        document.getElementById("editPassphraseHint").value = parsed.public_hint || "";
 
         alert(currentLang === 'zh' ? "✅ 舊資料已成功解密並填入編輯器！修改完成後請設定密語重新匯出。" : "✅ Loaded and decrypted! Edit details and save.");
       } catch (err) {
@@ -325,14 +299,11 @@ window.LeaveWell = window.LeaveWell || {};
   async function saveAndExportVault() {
     const pass = document.getElementById("editPassphrase").value;
     const confirmPass = document.getElementById("editConfirmPassphrase").value;
+    const hint = document.getElementById("editPassphraseHint").value.trim();
 
     if (!pass || pass.length < 12) return alert(currentLang === 'zh' ? "主密語長度需至少 12 字元！" : "Passphrase must be >= 12 chars!");
     if (pass !== confirmPass) return alert(currentLang === 'zh' ? "兩次輸入的密語不相符！" : "Passphrases do not match!");
     if (currentEditorItems.length === 0) return alert(currentLang === 'zh' ? "請至少加入一筆保單！" : "Please add at least one policy!");
-
-    if (!document.getElementById("chkRecoveryConfirmed").checked) {
-      return alert(currentLang === 'zh' ? "⚠ 請先抄寫紙本恢復碼，並勾選確認框！" : "⚠ Please write down recovery code and check box!");
-    }
 
     try {
       const publicInsurers = currentEditorItems.map(it => ({
@@ -347,25 +318,24 @@ window.LeaveWell = window.LeaveWell || {};
         masterNotes: document.getElementById("editMasterNotes").value
       };
 
-      const encryptedPart = await Crypto.encryptVault(secretData, pass, generatedRecoveryCode);
+      const encryptedPart = await Crypto.encryptVault(secretData, pass);
 
       const fullPackage = {
-        version: "4.0-two-tier",
+        version: "4.1-clue-tier",
         appName: "LeaveWell",
         exportedAt: new Date().toISOString(),
+        public_hint: hint,
         public_directory: { insurers: publicInsurers },
         encrypted_vault: encryptedPart
       };
 
       const rawJson = JSON.stringify(fullPackage, null, 2);
 
-      // 自動快取到本機
       localStorage.setItem(STORAGE_KEY, rawJson);
       memoryVault = fullPackage;
       renderPublicDirectory(memoryVault.public_directory);
       document.getElementById("btnExport").disabled = false;
 
-      // 產生實體下載
       const blob = new Blob([rawJson], { type: "application/json" });
       const url = URL.createObjectURL(blob);
       const a = document.createElement("a");
@@ -378,8 +348,8 @@ window.LeaveWell = window.LeaveWell || {};
       document.getElementById("editorModal").classList.add("hidden");
 
       alert(currentLang === 'zh' 
-        ? "🎉 雙層保險庫打包完成！已下載 JSON 檔案，並已在此裝置儲存安全快取。\n請妥善保存紙本恢復碼及 JSON 檔案。" 
-        : "🎉 Export complete! Saved to local cache and downloaded file.");
+        ? `🎉 保險庫打包完成！已下載 JSON 檔案並快取於本機。\n\n【重要下一步】\n請將你設定的線索提示：\n「${hint || '你的自訂線索'}」\n抄寫在實體小卡上，放進保險箱！` 
+        : "🎉 Export complete! Please write down the clue onto your paper card.");
     } catch (err) {
       alert("儲存過程發生錯誤：" + err.message);
     }
@@ -422,39 +392,25 @@ window.LeaveWell = window.LeaveWell || {};
       URL.revokeObjectURL(url);
     });
 
-    document.getElementById("tabUsePass").addEventListener("click", () => {
-      document.getElementById("modePassphraseBox").classList.remove("hidden");
-      document.getElementById("modeRecoveryBox").classList.add("hidden");
-      document.getElementById("tabUsePass").classList.add("active");
-      document.getElementById("tabUseRecovery").classList.remove("active");
-    });
-    document.getElementById("tabUseRecovery").addEventListener("click", () => {
-      document.getElementById("modePassphraseBox").classList.add("hidden");
-      document.getElementById("modeRecoveryBox").classList.remove("hidden");
-      document.getElementById("tabUsePass").classList.remove("active");
-      document.getElementById("tabUseRecovery").classList.add("active");
-    });
-
     document.getElementById("btnUnlockVault").addEventListener("click", unlockVault);
     document.getElementById("btnLockVault").addEventListener("click", lockVault);
 
     document.getElementById("btnOpenEditor").addEventListener("click", async () => {
       document.getElementById("editorModal").classList.remove("hidden");
-      if (!generatedRecoveryCode) refreshRecoveryCode();
 
-      // 若有快取且編輯器為空，主動提示可輸入密語載入舊資料再改
       if (memoryVault && currentEditorItems.length === 0) {
-        const wantLoad = confirm(currentLang === 'zh' ? "偵測到本機已有保險庫資料。是否要輸入密語直接載入舊資料進行修改？" : "Detected active vault. Unlock with passphrase to edit existing data?");
+        const wantLoad = confirm(currentLang === 'zh' ? "偵測到本機已有保險庫。是否輸入密語載入舊資料再編輯？" : "Detected vault. Unlock to edit?");
         if (wantLoad) {
           const pass = prompt(currentLang === 'zh' ? "請輸入家庭密語以解密編輯：" : "Enter master passphrase:");
           if (pass) {
             try {
-              const unlocked = await Crypto.decryptVault(pass, false, memoryVault.encrypted_vault);
+              const unlocked = await Crypto.decryptVault(pass, memoryVault.encrypted_vault);
               currentEditorItems = unlocked.policies || [];
               renderEditorItems();
               document.getElementById("editDevicePin").value = unlocked.devicePin || "";
               document.getElementById("editPrimaryEmail").value = unlocked.primaryEmail || "";
               document.getElementById("editMasterNotes").value = unlocked.masterNotes || "";
+              document.getElementById("editPassphraseHint").value = memoryVault.public_hint || "";
               alert(currentLang === 'zh' ? "✅ 舊資料已載入！修改完成後重新設定密語匯出即可。" : "✅ Loaded! Update and save.");
             } catch (err) {
               alert((currentLang === 'zh' ? "❌ 解密失敗：" : "❌ Failed: ") + err.message);
@@ -467,11 +423,6 @@ window.LeaveWell = window.LeaveWell || {};
     document.getElementById("btnCloseEditor").addEventListener("click", () => {
       wipeEditorFields();
       document.getElementById("editorModal").classList.add("hidden");
-    });
-
-    document.getElementById("btnRefreshRecovery").addEventListener("click", () => {
-      if (generatedRecoveryCode && !confirm("重新生成會使舊恢復碼永久作廢，確定要產生新恢復碼嗎？")) return;
-      refreshRecoveryCode();
     });
 
     document.getElementById("btnEditorLoadExisting").addEventListener("click", () => document.getElementById("editorLoadFileInput").click());
@@ -531,7 +482,6 @@ window.LeaveWell = window.LeaveWell || {};
       lockVault();
     });
 
-    // 💡 開啟頁面時自動載入本機快取
     const cachedVaultRaw = localStorage.getItem(STORAGE_KEY);
     if (cachedVaultRaw) {
       try {
