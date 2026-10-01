@@ -23,7 +23,7 @@
   <div class="header-row">
     <div>
       <h1 id="uiAppTitle">🛡️ 留愛心安 LeaveWell</h1>
-      <p class="sub" id="uiAppSub">留愛於生，遇事心安 ‧ 三層家庭應急資產索引 ‧ 純本地加密</p>
+      <p class="sub" id="uiAppSub">留愛於生，遇事心安 ‧ 家庭應急資產雙層索引 ‧ 純本地加密</p>
     </div>
     <div class="lang-switch">
       <button class="btn-sec btn-sm" id="btnLangZh">繁</button>
@@ -31,15 +31,12 @@
     </div>
   </div>
 
-  <div class="anchor-status-row">
-    <div>
-      <span id="uiAnchorStatus">信任錨指紋：未綁定 (首次匯入時建立)</span>
-      <button id="btnResetAnchor" class="btn-text-danger">[重設錨點]</button>
-    </div>
+  <div class="session-status-row">
+    <span class="status-hint" id="uiSessionHint">離線安全保護中 ‧ 零雲端數據留存</span>
     <span id="lockTimer" class="badge badge-red hidden">會話倒數: 180s</span>
   </div>
 
-  <!-- 💡 緊急使用指引（3 步即明） -->
+  <!-- 💡 緊急應急指引（3 步即明） -->
   <div class="guide-box">
     <div class="guide-title">
       <span id="uiGuideTitle">💡 家人緊急應急指南（3 步即用）</span>
@@ -48,65 +45,50 @@
     <div id="guideContent" class="guide-content">
       <div class="guide-step">
         <span class="step-num">1</span>
-        <div id="uiGuideStep1"><strong>搵備份檔</strong>：找出隨身碟或書房文件夾內之 <code>LeaveWell-Vault-*.json</code> 檔案。</div>
+        <div id="uiGuideStep1"><strong>搵備份檔</strong>：找出隨身碟或書房之 <code>LeaveWell-Vault-*.json</code> 檔案。</div>
       </div>
       <div class="guide-step">
         <span class="step-num">2</span>
-        <div id="uiGuideStep2"><strong>撳匯入</strong>：點擊底部 <span class="highlight-btn">📥 匯入 JSON 檔案</span> 上傳，首次開啟核對小卡指紋按確認。</div>
+        <div id="uiGuideStep2"><strong>撳匯入</strong>：點擊底部 <span class="highlight-btn">📥 匯入 JSON 檔案</span> 上傳。</div>
       </div>
       <div class="guide-step">
         <span class="step-num">3</span>
-        <div id="uiGuideStep3"><strong>即時查閱</strong>：頂部綠色/藍色區會<strong>即時免密碼顯示</strong>保險經紀電話；如需解鎖手機，於紅色區輸入約定密語或抄寫的 52 碼恢復碼。</div>
+        <div id="uiGuideStep3"><strong>即時查閱</strong>：綠色區<strong>免密碼即時顯示</strong>所有持有之保險公司；若需經紀電話、保單號或手機 PIN，於紅色區輸入密語或紙本 52 碼恢復碼。</div>
       </div>
     </div>
   </div>
 
-  <!-- 篡改告警橫額 -->
-  <div id="tamperWarning" class="alert-banner">
-    <span id="uiTamperAlert">⛔ 安全防禦阻斷：Ed25519 簽名無效！公鑰與本機信任錨不相符，或檔案資料曾遭未授權竄改。請直接致電第一層官方熱線核實。</span>
-  </div>
-
-  <!-- 第一層：官方公開線索 -->
-  <div class="panel tier1">
+  <!-- 🟢 第一層：公開名冊（免密碼・一開即睇） -->
+  <div class="panel tier-public">
     <div class="panel-head">
-      <h2 id="uiTier1Title">🟢 第一層：官方保險索償熱線（免密碼・官方防偽）</h2>
-      <span class="badge badge-green" id="uiTier1Badge">公開驗證</span>
+      <h2 id="uiPublicTitle">🟢 第一層：保險公司名冊（免密碼・公開指引）</h2>
+      <span class="badge badge-green" id="uiPublicBadge">免密碼公開</span>
     </div>
-    <div id="tier1Display">
-      <div class="empty-hint tier1-hint" id="uiTier1Empty">尚未匯入任何備份檔案...</div>
+    <div id="publicDisplay">
+      <div class="empty-hint" id="uiPublicEmpty">尚未匯入任何備份檔案...</div>
     </div>
-    <div class="disclaimer-text" id="uiHotlineDisclaimer">
-      ⚠️ 熱線僅供參考，理賠前請核對保單或官方網站。
+    <div class="disclaimer-text" id="uiPublicDisclaimer">
+      💡 如無密碼，請直接搜尋上述官方熱線，向理賠部報出受保人英文姓名及身份證號碼即可核查保單。
     </div>
   </div>
 
-  <!-- 第二層：個人經紀線索 -->
-  <div class="panel tier2">
+  <!-- 🔴 第二層：機密金庫（單一密碼／紙本恢復碼） -->
+  <div class="panel tier-secret">
     <div class="panel-head">
-      <h2 id="uiTier2Title">🔵 第二層：個人經紀聯絡與保單定位（免密碼・Ed25519 簽名）</h2>
-      <span id="tier2StatusBadge" class="badge badge-blue">待驗簽</span>
-    </div>
-    <div id="tier2Display">
-      <div class="empty-hint" id="uiTier2Empty">尚未匯入任何備份檔案...</div>
-    </div>
-  </div>
-
-  <!-- 第三層：深度加密數碼閘門 -->
-  <div class="panel tier3">
-    <div class="panel-head">
-      <h2 id="uiTier3Title">🔴 第三層：數碼存取主閘門（AES-GCM-256 + 雙重 AAD）</h2>
-      <span class="badge badge-red" id="uiTier3Badge">需家庭密語／恢復碼</span>
+      <h2 id="uiSecretTitle">🔴 第二層：核心應急金庫（需家庭密語／恢復碼）</h2>
+      <span class="badge badge-red" id="uiSecretBadge">AES-256 加密</span>
     </div>
 
-    <div id="tier3LockSection">
+    <!-- 鎖定狀態：輸入解密 -->
+    <div id="secretLockSection">
       <div class="tab-btn-group">
         <button class="btn-sec btn-tab active" id="tabUsePass">使用主密語</button>
-        <button class="btn-sec btn-tab hidden" id="tabUseRecovery">使用紙本恢復碼</button>
+        <button class="btn-sec btn-tab" id="tabUseRecovery">使用紙本恢復碼</button>
       </div>
 
       <div id="modePassphraseBox">
-        <label id="uiPassphraseLabel">輸入家庭約定高熵密語 (Passphrase)：</label>
-        <input type="password" id="passphrase" placeholder="輸入約定家庭密語">
+        <label id="uiPassphraseLabel">輸入約定家庭密語 (Passphrase)：</label>
+        <input type="password" id="passphrase" placeholder="輸入家庭密語">
       </div>
       <div id="modeRecoveryBox" class="hidden">
         <label id="uiRecoveryLabel">輸入紙本 52 碼恢復碼 (Emergency Recovery Code)：</label>
@@ -114,27 +96,36 @@
       </div>
 
       <div class="btn-row">
-        <button class="btn-pri" id="btnUnlockTier3">🔓 解密數碼主閘門</button>
+        <button class="btn-pri" id="btnUnlockVault">🔓 解密完整應急金庫</button>
       </div>
       <div id="authErrorMsg" class="error-msg"></div>
     </div>
 
-    <!-- 解密後內容區 -->
-    <div id="tier3ContentSection" class="hidden">
-      <div class="item-card tier3-card">
-        <label class="card-label" id="uiDevicePinTitle">📱 手機解鎖與雙重驗證 (2FA/SMS)</label>
-        <div id="valDevicePin" class="val-text mono-input"></div>
+    <!-- 解鎖狀態：完整呈現 -->
+    <div id="secretContentSection" class="hidden">
+      <div class="item-card border-blue">
+        <label class="card-label label-blue" id="uiSecPoliciesTitle">📋 專屬顧問、保單編號與存放位置</label>
+        <div id="secretPoliciesList" class="mt-sm"></div>
       </div>
-      <div class="item-card tier3-card">
-        <label class="card-label" id="uiEmailTitle">📧 主電郵帳號與取回線索</label>
-        <div id="valPrimaryEmail" class="val-text"></div>
+
+      <div class="grid-2col">
+        <div class="item-card">
+          <label class="card-label" id="uiDevicePinTitle">📱 手機解鎖與雙重驗證 (2FA/SMS)</label>
+          <div id="valDevicePin" class="val-text mono-input"></div>
+        </div>
+        <div class="item-card">
+          <label class="card-label" id="uiEmailTitle">📧 主電郵帳號與取回線索</label>
+          <div id="valPrimaryEmail" class="val-text"></div>
+        </div>
       </div>
-      <div class="item-card tier3-card">
-        <label class="card-label" id="uiNotesTitle">🔑 密碼庫與官方身後繼承設定 (Apple / Google)</label>
+
+      <div class="item-card">
+        <label class="card-label" id="uiNotesTitle">🔑 密碼庫 Master Key 與身後重要交代</label>
         <div id="valMasterNotes" class="val-text pre-wrap"></div>
       </div>
+
       <div class="btn-row">
-        <button class="btn-sec" id="btnLockTier3">🔒 立即鎖定第三層</button>
+        <button class="btn-sec" id="btnLockVault">🔒 立即鎖定金庫</button>
       </div>
     </div>
   </div>
@@ -143,45 +134,29 @@
   <div class="toolbar">
     <input type="file" id="fileInput" class="hidden" accept=".json">
     <button class="btn-sec" id="btnTriggerImport">📥 匯入 JSON 檔案</button>
-    <button class="btn-sec" id="btnExport" disabled>💾 匯出目前已驗證備份</button>
-    <button class="btn-sec" id="btnOpenEditor">⚙️ 建立／編輯／簽署保險庫</button>
+    <button class="btn-sec" id="btnExport" disabled>💾 匯出目前備份檔</button>
+    <button class="btn-sec" id="btnOpenEditor">⚙️ 建立／修改保險庫</button>
   </div>
 </div>
 
-<!-- 建立與簽署彈窗 -->
+<!-- 建立與編輯彈窗 -->
 <div id="editorModal" class="modal-backdrop hidden">
   <div class="modal-box">
     <div class="modal-header">
-      <h2 id="uiEditorModalTitle">⚙️ 留愛心安 ‧ 保險庫編輯與簽署</h2>
+      <h2 id="uiEditorModalTitle">⚙️ 建立／修改家庭應急保險庫</h2>
       <button id="btnCloseEditor" class="btn-close">✕</button>
     </div>
 
-    <!-- 載入舊檔 -->
-    <div class="item-card flex-between">
-      <span class="card-hint" id="uiEditorLoadHint">已有舊備份？載入舊 JSON 即可自動填入資料進行增刪。</span>
+    <!-- 載入舊檔再改 -->
+    <div class="item-card flex-between border-blue">
+      <span class="card-hint" id="uiEditorLoadHint">修改舊備份？載入舊 JSON 並輸入密語即可自動載入舊資料再編輯。</span>
       <input type="file" id="editorLoadFileInput" class="hidden" accept=".json">
       <button class="btn-sec btn-sm" id="btnEditorLoadExisting">📂 載入舊檔編輯</button>
     </div>
 
-    <!-- 1. 金鑰管理 -->
-    <div class="item-card border-blue">
-      <div class="flex-between">
-        <label class="label-blue" id="uiEditorSec1Label">1. Ed25519 簽名金鑰管理</label>
-        <span id="fingerprintPreview" class="badge badge-blue">指紋: 待產生</span>
-      </div>
-      <div class="btn-row my-sm">
-        <button class="btn-sec" id="btnGenKeys">🔑 產生新 Ed25519 金鑰對</button>
-        <button class="btn-sec" id="btnWipeKeys">🧹 清空輸入金鑰</button>
-      </div>
-      <label id="uiEditorPubKeyLabel">公鑰 (32-byte Hex)：</label>
-      <input type="text" id="editPublicKeyHex" placeholder="64 Hex 字元">
-      <label class="mt-sm" id="uiEditorPrivKeyLabel">私鑰 (32-byte Hex - 本機簽署專用)：</label>
-      <input type="password" id="editPrivateKeyHex" autocomplete="off" spellcheck="false" placeholder="貼上私鑰以簽名">
-    </div>
-
-    <!-- 2. 結構化新增保險 -->
+    <!-- 1. 新增保單項目 -->
     <div class="item-card">
-      <label class="label-green" id="uiEditorSec2Label">2. 結構化保險清單 (自動產生第一層與第二層)</label>
+      <label class="label-green" id="uiEditorSec1Label">1. 保險清單（公司名公開；經紀與保單號加密）</label>
       <div class="flex-row my-sm">
         <select id="editorInsurerSelect" class="flex-2"></select>
         <select id="editorInsurerType" class="flex-1">
@@ -189,34 +164,34 @@
           <option value="自願醫保">自願醫保</option>
           <option value="危疾保障">危疾保障</option>
           <option value="年金/儲蓄">年金/儲蓄</option>
+          <option value="意外保險">意外保險</option>
         </select>
       </div>
 
       <div id="editorCustomBox" class="custom-insurer-box hidden">
-        <input type="text" id="inputCustomName" placeholder="自填保險公司名稱" class="mb-sm">
-        <input type="text" id="inputCustomHotline" placeholder="自填官方熱線 (例: +852 2800 0000)">
+        <input type="text" id="inputCustomName" placeholder="自填保險公司名稱">
       </div>
 
       <div class="grid-2col my-sm">
         <input type="text" id="inputAgentName" placeholder="顧問姓名">
         <input type="text" id="inputAgentPhone" placeholder="顧問電話 (例: +852 9123 4567)">
         <input type="text" id="inputPolicyNum" placeholder="保單編號">
-        <input type="text" id="inputFileLoc" placeholder="存放位置 (例: 書房藍色夾)">
+        <input type="text" id="inputFileLoc" placeholder="合約存放位置 (例: 書房藍色夾)">
       </div>
 
       <button class="btn-pri w-full" id="btnAddInsuranceItem">➕ 加入此保單至清單</button>
       <div id="editorItemsList" class="items-list"></div>
     </div>
 
-    <!-- 3. 第三層數碼閘門 -->
+    <!-- 2. 機密憑證與密語設定 -->
     <div class="item-card border-red">
-      <label class="label-red" id="uiEditorSec3Label">3. 第三層：機密數碼閘門 (AES-GCM 加密)</label>
+      <label class="label-red" id="uiEditorSec2Label">2. 機密數碼閘門與加密密語</label>
       <input type="text" id="editDevicePin" placeholder="手機解鎖 PIN / 雙重驗證提示" class="mb-sm">
       <input type="text" id="editPrimaryEmail" placeholder="主電郵地址 (需包含 @)" class="mb-sm">
       <textarea id="editMasterNotes" rows="2" placeholder="密碼庫 Master Key 或重要身後交代" class="mb-sm"></textarea>
       
       <div class="flex-row mb-sm">
-        <input type="password" id="editPassphrase" autocomplete="new-password" placeholder="主密語 (>= 12 字元)" class="flex-1">
+        <input type="password" id="editPassphrase" autocomplete="new-password" placeholder="加密主密語 (>= 12 字元)" class="flex-1">
         <input type="password" id="editConfirmPassphrase" autocomplete="new-password" placeholder="確認主密語" class="flex-1">
       </div>
 
@@ -237,7 +212,7 @@
     </div>
 
     <div class="btn-row">
-      <button class="btn-pri" id="btnSignExport">✍️ 簽署並匯出完整 JSON</button>
+      <button class="btn-pri" id="btnSaveExport">💾 加密並匯出完整 JSON</button>
     </div>
   </div>
 </div>
