@@ -1,5 +1,5 @@
 /**
- * i18n.js - 留愛心安 LeaveWell 雙語字典 (深凍結版)
+ * i18n.js - 留愛心安 LeaveWell 雙語字典
  */
 window.LeaveWell = window.LeaveWell || {};
 
@@ -36,11 +36,20 @@ window.LeaveWell = window.LeaveWell || {};
       fileLocation: "合約存放位置",
       tier3Title: "🔴 第三層：數碼存取主閘門（AES-GCM-256 + 雙重 AAD）",
       tier3Badge: "需家庭密語／恢復碼",
+      tabPass: "使用主密語",
+      tabRec: "使用紙本恢復碼",
       passphraseLabel: "輸入家庭約定高熵密語 (Passphrase)：",
+      passphrasePlaceholder: "輸入約定家庭密語",
       recoveryLabel: "輸入紙本 52 碼恢復碼 (Emergency Recovery Code)：",
+      recoveryPlaceholder: "RC-XXXXX-XXXXX...",
+      unlockBtn: "🔓 解密數碼主閘門",
+      lockBtn: "🔒 立即鎖定第三層",
       devicePinTitle: "📱 手機解鎖與雙重驗證 (2FA/SMS)",
       emailTitle: "📧 主電郵帳號與取回線索",
       notesTitle: "🔑 密碼庫與官方身後繼承設定 (Apple / Google)",
+      btnImport: "📥 匯入 JSON 檔案",
+      btnExport: "💾 匯出目前已驗證備份",
+      btnEditor: "⚙️ 建立／編輯／簽署保險庫",
       hotlineDisclaimer: "⚠️ 熱線僅供參考，理賠前請核對保單或官方網站。",
       invalidPhone: "[格式不符，請核對]"
     },
@@ -66,11 +75,20 @@ window.LeaveWell = window.LeaveWell || {};
       fileLocation: "Physical File Location",
       tier3Title: "🔴 Tier 3: Digital Gateway Access (AES-GCM-256 + Dual AAD)",
       tier3Badge: "Passphrase / Recovery Code Required",
+      tabPass: "Use Passphrase",
+      tabRec: "Use Recovery Code",
       passphraseLabel: "Enter agreed family master passphrase:",
+      passphrasePlaceholder: "Enter master passphrase",
       recoveryLabel: "Enter paper 52-char Emergency Recovery Code:",
+      recoveryPlaceholder: "RC-XXXXX-XXXXX...",
+      unlockBtn: "🔓 Decrypt Digital Gateway",
+      lockBtn: "🔒 Lock Tier 3 Now",
       devicePinTitle: "📱 Device PIN & 2FA Access",
       emailTitle: "📧 Primary Email & Recovery Clues",
       notesTitle: "🔑 Password Manager & Legacy Contacts (Apple / Google)",
+      btnImport: "📥 Import JSON File",
+      btnExport: "💾 Export Verified Backup",
+      btnEditor: "⚙️ Create / Edit / Sign Vault",
       hotlineDisclaimer: "⚠️ Hotlines for reference only. Verify with official website before claims.",
       invalidPhone: "[Invalid Format - Caution]"
     }
