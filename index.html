@@ -130,13 +130,13 @@
 <div id="editorModal" class="modal-backdrop hidden">
   <div class="modal-box">
     <div class="modal-header">
-      <h2>⚙️️ 留愛心安 ‧ 保險庫編輯與簽署</h2>
+      <h2 id="uiEditorModalTitle">⚙️ 留愛心安 ‧ 保險庫編輯與簽署</h2>
       <button id="btnCloseEditor" class="btn-close">✕</button>
     </div>
 
     <!-- 載入舊檔 -->
     <div class="item-card flex-between">
-      <span class="card-hint">已有舊備份？載入舊 JSON 即可自動填入資料進行增刪。</span>
+      <span class="card-hint" id="uiEditorLoadHint">已有舊備份？載入舊 JSON 即可自動填入資料進行增刪。</span>
       <input type="file" id="editorLoadFileInput" class="hidden" accept=".json">
       <button class="btn-sec btn-sm" id="btnEditorLoadExisting">📂 載入舊檔編輯</button>
     </div>
@@ -144,22 +144,22 @@
     <!-- 1. 金鑰管理 -->
     <div class="item-card border-blue">
       <div class="flex-between">
-        <label class="label-blue">1. Ed25519 簽名金鑰管理</label>
+        <label class="label-blue" id="uiEditorSec1Label">1. Ed25519 簽名金鑰管理</label>
         <span id="fingerprintPreview" class="badge badge-blue">指紋: 待產生</span>
       </div>
       <div class="btn-row my-sm">
         <button class="btn-sec" id="btnGenKeys">🔑 產生新 Ed25519 金鑰對</button>
         <button class="btn-sec" id="btnWipeKeys">🧹 清空輸入金鑰</button>
       </div>
-      <label>公鑰 (32-byte Hex)：</label>
+      <label id="uiEditorPubKeyLabel">公鑰 (32-byte Hex)：</label>
       <input type="text" id="editPublicKeyHex" placeholder="64 Hex 字元">
-      <label class="mt-sm">私鑰 (32-byte Hex - 本機簽署專用)：</label>
+      <label class="mt-sm" id="uiEditorPrivKeyLabel">私鑰 (32-byte Hex - 本機簽署專用)：</label>
       <input type="password" id="editPrivateKeyHex" autocomplete="off" spellcheck="false" placeholder="貼上私鑰以簽名">
     </div>
 
     <!-- 2. 結構化新增保險 -->
     <div class="item-card">
-      <label class="label-green">2. 結構化保險清單 (自動產生第一層與第二層)</label>
+      <label class="label-green" id="uiEditorSec2Label">2. 結構化保險清單 (自動產生第一層與第二層)</label>
       <div class="flex-row my-sm">
         <select id="editorInsurerSelect" class="flex-2"></select>
         <select id="editorInsurerType" class="flex-1">
@@ -188,7 +188,7 @@
 
     <!-- 3. 第三層數碼閘門 -->
     <div class="item-card border-red">
-      <label class="label-red">3. 第三層：機密數碼閘門 (AES-GCM 加密)</label>
+      <label class="label-red" id="uiEditorSec3Label">3. 第三層：機密數碼閘門 (AES-GCM 加密)</label>
       <input type="text" id="editDevicePin" placeholder="手機解鎖 PIN / 雙重驗證提示" class="mb-sm">
       <input type="text" id="editPrimaryEmail" placeholder="主電郵地址 (需包含 @)" class="mb-sm">
       <textarea id="editMasterNotes" rows="2" placeholder="密碼庫 Master Key 或重要身後交代" class="mb-sm"></textarea>
@@ -201,13 +201,13 @@
       <!-- 紙本恢復碼 -->
       <div class="recovery-box-border">
         <div class="flex-between mb-sm">
-          <label class="label-yellow">紙本緊急恢復碼 (忘記密語時唯一解鎖手段)：</label>
+          <label class="label-yellow" id="uiEditorRecLabel">紙本緊急恢復碼 (忘記密語時唯一解鎖手段)：</label>
           <button class="btn-sec btn-sm" id="btnRefreshRecovery">重新生成</button>
         </div>
         <div id="displayRecoveryCode" class="code-box">尚未生成</div>
         <div class="flex-row mt-sm align-center">
           <input type="checkbox" id="chkRecoveryConfirmed" class="w-auto cursor-pointer">
-          <label for="chkRecoveryConfirmed" class="chk-label">
+          <label for="chkRecoveryConfirmed" class="chk-label" id="uiChkRecoveryText">
             我已完整抄寫此 52 碼恢復碼至紙本，並存於安全地點。
           </label>
         </div>
@@ -215,7 +215,7 @@
     </div>
 
     <div class="btn-row">
-      <button class="btn-pri" id="btnSignExport">✍️ 簽署並匯出完整 JSON</button>
+      <button class="btn-pri" id="btnSignExport">✍️️ 簽署並匯出完整 JSON</button>
     </div>
   </div>
 </div>
