@@ -1,5 +1,5 @@
 /**
- * app.js - UI 控制器 (v3.5.2 - 完美全中/全英雙語同步版)
+ * app.js - UI 控制器 (v3.5.2)
  */
 window.LeaveWell = window.LeaveWell || {};
 
@@ -121,11 +121,21 @@ window.LeaveWell = window.LeaveWell || {};
     localStorage.setItem("vault_lang", lang);
     const t = I18N[lang];
 
-    // 1. 頂部主畫面與告警橫額
+    // 1. 頂部標題、引導卡片與告警橫額
     if (document.getElementById("uiAppTitle")) document.getElementById("uiAppTitle").innerText = t.appTitle;
     if (document.getElementById("uiAppSub")) document.getElementById("uiAppSub").innerText = t.appSub;
     if (document.getElementById("uiTamperAlert")) document.getElementById("uiTamperAlert").innerText = t.tamperAlert;
     if (document.getElementById("btnResetAnchor")) document.getElementById("btnResetAnchor").innerText = lang === 'zh' ? "[重設錨點]" : "[Reset Anchor]";
+
+    if (document.getElementById("uiGuideTitle")) document.getElementById("uiGuideTitle").innerText = t.guideTitle;
+    if (document.getElementById("uiGuideStep1")) document.getElementById("uiGuideStep1").innerHTML = t.guideStep1;
+    if (document.getElementById("uiGuideStep2")) document.getElementById("uiGuideStep2").innerHTML = t.guideStep2;
+    if (document.getElementById("uiGuideStep3")) document.getElementById("uiGuideStep3").innerHTML = t.guideStep3;
+    const btnToggleGuide = document.getElementById("btnToggleGuide");
+    if (btnToggleGuide) {
+      const isHidden = document.getElementById("guideContent").classList.contains("hidden");
+      btnToggleGuide.innerText = isHidden ? t.guideExpand : t.guideCollapse;
+    }
 
     // 2. 第一層 (Tier 1)
     if (document.getElementById("uiTier1Title")) document.getElementById("uiTier1Title").innerText = t.tier1Title;
@@ -143,30 +153,29 @@ window.LeaveWell = window.LeaveWell || {};
       }
     }
 
-    // 4. 第三層 (Tier 3) 標籤、輸入框與按鈕
+    // 4. 第三層 (Tier 3)
     if (document.getElementById("uiTier3Title")) document.getElementById("uiTier3Title").innerText = t.tier3Title;
     if (document.getElementById("uiTier3Badge")) document.getElementById("uiTier3Badge").innerText = t.tier3Badge;
-    if (document.getElementById("tabUsePass")) document.getElementById("tabUsePass").innerText = t.tabPass || (lang === 'zh' ? "使用主密語" : "Use Passphrase");
-    if (document.getElementById("tabUseRecovery")) document.getElementById("tabUseRecovery").innerText = t.tabRec || (lang === 'zh' ? "使用紙本恢復碼" : "Use Recovery Code");
+    if (document.getElementById("tabUsePass")) document.getElementById("tabUsePass").innerText = t.tabPass;
+    if (document.getElementById("tabUseRecovery")) document.getElementById("tabUseRecovery").innerText = t.tabRec;
     
     if (document.getElementById("uiPassphraseLabel")) document.getElementById("uiPassphraseLabel").innerText = t.passphraseLabel;
-    if (document.getElementById("passphrase")) document.getElementById("passphrase").placeholder = t.passphrasePlaceholder || (lang === 'zh' ? "輸入約定家庭密語" : "Enter master passphrase");
+    if (document.getElementById("passphrase")) document.getElementById("passphrase").placeholder = t.passphrasePlaceholder;
     if (document.getElementById("uiRecoveryLabel")) document.getElementById("uiRecoveryLabel").innerText = t.recoveryLabel;
-    if (document.getElementById("recoveryCodeInput")) document.getElementById("recoveryCodeInput").placeholder = t.recoveryPlaceholder || "RC-XXXXX-XXXXX...";
-    if (document.getElementById("btnUnlockTier3")) document.getElementById("btnUnlockTier3").innerText = t.unlockBtn || (lang === 'zh' ? "🔓 解密數碼主閘門" : "🔓 Decrypt Digital Gateway");
-    if (document.getElementById("btnLockTier3")) document.getElementById("btnLockTier3").innerText = t.lockBtn || (lang === 'zh' ? "🔒 立即鎖定第三層" : "🔒 Lock Tier 3 Now");
+    if (document.getElementById("recoveryCodeInput")) document.getElementById("recoveryCodeInput").placeholder = t.recoveryPlaceholder;
+    if (document.getElementById("btnUnlockTier3")) document.getElementById("btnUnlockTier3").innerText = t.unlockBtn;
+    if (document.getElementById("btnLockTier3")) document.getElementById("btnLockTier3").innerText = t.lockBtn;
 
-    // 5. 第三層卡片細部標題
     if (document.getElementById("uiDevicePinTitle")) document.getElementById("uiDevicePinTitle").innerText = t.devicePinTitle;
     if (document.getElementById("uiEmailTitle")) document.getElementById("uiEmailTitle").innerText = t.emailTitle;
     if (document.getElementById("uiNotesTitle")) document.getElementById("uiNotesTitle").innerText = t.notesTitle;
 
-    // 6. 底部工具列按鈕
-    if (document.getElementById("btnTriggerImport")) document.getElementById("btnTriggerImport").innerText = t.btnImport || (lang === 'zh' ? "📥 匯入 JSON 檔案" : "📥 Import JSON File");
-    if (document.getElementById("btnExport")) document.getElementById("btnExport").innerText = t.btnExport || (lang === 'zh' ? "💾 匯出目前已驗證備份" : "💾 Export Verified Backup");
-    if (document.getElementById("btnOpenEditor")) document.getElementById("btnOpenEditor").innerText = t.btnEditor || (lang === 'zh' ? "⚙️ 建立／編輯／簽署保險庫" : "⚙️ Create / Edit / Sign Vault");
+    // 5. 底部工具列
+    if (document.getElementById("btnTriggerImport")) document.getElementById("btnTriggerImport").innerText = t.btnImport;
+    if (document.getElementById("btnExport")) document.getElementById("btnExport").innerText = t.btnExport;
+    if (document.getElementById("btnOpenEditor")) document.getElementById("btnOpenEditor").innerText = t.btnEditor;
 
-    // 7. 編輯器彈窗雙語同步
+    // 6. 編輯器彈窗雙語切換
     if (document.getElementById("uiEditorModalTitle")) document.getElementById("uiEditorModalTitle").innerText = lang === 'zh' ? "⚙️ 留愛心安 ‧ 保險庫編輯與簽署" : "⚙️ LeaveWell ‧ Edit & Sign Vault";
     if (document.getElementById("uiEditorLoadHint")) document.getElementById("uiEditorLoadHint").innerText = lang === 'zh' ? "已有舊備份？載入舊 JSON 即可自動填入資料進行增刪。" : "Have a backup? Load existing JSON to autofill and edit.";
     if (document.getElementById("btnEditorLoadExisting")) document.getElementById("btnEditorLoadExisting").innerText = lang === 'zh' ? "📂 載入舊檔編輯" : "📂 Load Existing File";
@@ -200,7 +209,6 @@ window.LeaveWell = window.LeaveWell || {};
 
     await updateAnchorUI();
 
-    // 重新渲染清單或空白預設字
     if (memoryVault) {
       renderTier1(memoryVault.tier1_public);
       renderTier2(memoryVault.tier1_public, memoryVault.tier2_personal_signed, currentSigValid);
@@ -633,6 +641,17 @@ window.LeaveWell = window.LeaveWell || {};
     document.getElementById("btnLangZh").addEventListener("click", () => setLanguage("zh"));
     document.getElementById("btnLangEn").addEventListener("click", () => setLanguage("en"));
 
+    // 💡 指引卡片折疊控制
+    const btnToggleGuide = document.getElementById("btnToggleGuide");
+    if (btnToggleGuide) {
+      btnToggleGuide.addEventListener("click", () => {
+        const content = document.getElementById("guideContent");
+        const isHidden = content.classList.toggle("hidden");
+        const t = I18N[currentLang];
+        btnToggleGuide.innerText = isHidden ? t.guideExpand : t.guideCollapse;
+      });
+    }
+
     document.getElementById("btnResetAnchor").addEventListener("click", async () => {
       if (confirm(currentLang === 'zh' ? "確定要重設本機信任錨？下次匯入檔案時將重新核對指紋。" : "Reset trust anchor? You will re-verify the fingerprint on next import.")) {
         localStorage.removeItem("vault_anchor_pub");
@@ -779,7 +798,6 @@ window.LeaveWell = window.LeaveWell || {};
       lockTier3();
     });
 
-    // 初始化語言同步
     setLanguage(currentLang);
   });
 })();
