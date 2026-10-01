@@ -1,5 +1,5 @@
 /**
- * app.js - UI 控制器 (v3.5.1)
+ * app.js - UI 控制器 (v3.5.2 - 完美全中/全英雙語同步版)
  */
 window.LeaveWell = window.LeaveWell || {};
 
@@ -38,12 +38,13 @@ window.LeaveWell = window.LeaveWell || {};
   async function updateAnchorUI() {
     const anchor = localStorage.getItem("vault_anchor_pub");
     const el = document.getElementById("uiAnchorStatus");
+    if (!el) return;
     if (anchor) {
       const fp = await Crypto.computeFingerprint(anchor);
-      el.innerText = `信任錨已建立 (指紋: ${fp})`;
+      el.innerText = currentLang === 'zh' ? `信任錨已建立 (指紋: ${fp})` : `Trust Anchor Set (Fingerprint: ${fp})`;
       el.style.color = "#34d399";
     } else {
-      el.innerText = "信任錨指紋：未綁定 (首次匯入時建立)";
+      el.innerText = currentLang === 'zh' ? "信任錨指紋：未綁定 (首次匯入時建立)" : "Trust Anchor Fingerprint: Unset (Initialized on first import)";
       el.style.color = "var(--sub)";
     }
   }
@@ -51,7 +52,7 @@ window.LeaveWell = window.LeaveWell || {};
   async function verifyAndResolveTrustAnchor(incomingPubHex, sigHex, payload) {
     const isSigValid = await Crypto.verifyEd25519(incomingPubHex, sigHex, payload);
     if (!isSigValid) {
-      throw new Error("數位簽名校驗不符！檔案可能遭竄改，未寫入信任錨。");
+      throw new Error(currentLang === 'zh' ? "數位簽名校驗不符！檔案可能遭竄改，未寫入信任錨。" : "Digital signature verification failed! File may be tampered; anchor not set.");
     }
 
     const current = localStorage.getItem("vault_anchor_pub");
@@ -63,7 +64,7 @@ window.LeaveWell = window.LeaveWell || {};
         : `[LeaveWell ‧ First-Time Trust on Use]\nSignature is valid! Signer SHA-256 fingerprint:\n${incomingFp}\n\nDoes this match your paper Emergency Sheet?\nClick OK to permanently anchor this key as trusted.`;
       
       if (!confirm(msg)) {
-        throw new Error("使用者拒絕信任此簽署者指紋，終止載入。");
+        throw new Error(currentLang === 'zh' ? "使用者拒絕信任此簽署者指紋，終止載入。" : "User rejected this signer fingerprint. Aborted.");
       }
       localStorage.setItem("vault_anchor_pub", incomingPubHex);
       await updateAnchorUI();
@@ -72,7 +73,9 @@ window.LeaveWell = window.LeaveWell || {};
 
     if (current !== incomingPubHex) {
       const curFp = await Crypto.computeFingerprint(current);
-      throw new Error(`公鑰與本機已建立的信任錨不符！\n(本機錨點指紋: ${curFp}, 檔案指紋: ${incomingFp})`);
+      throw new Error(currentLang === 'zh' 
+        ? `公鑰與本機已建立的信任錨不符！\n(本機錨點指紋: ${curFp}, 檔案指紋: ${incomingFp})`
+        : `Public key does not match local trust anchor!\n(Local: ${curFp}, Incoming: ${incomingFp})`);
     }
 
     return current;
@@ -117,25 +120,95 @@ window.LeaveWell = window.LeaveWell || {};
     currentLang = lang;
     localStorage.setItem("vault_lang", lang);
     const t = I18N[lang];
-    document.getElementById("uiAppTitle").innerText = t.appTitle;
-    document.getElementById("uiAppSub").innerText = t.appSub;
-    document.getElementById("uiTamperAlert").innerText = t.tamperAlert;
-    document.getElementById("uiTier1Title").innerText = t.tier1Title;
-    document.getElementById("uiTier1Badge").innerText = t.tier1Badge;
-    document.getElementById("uiTier2Title").innerText = t.tier2Title;
-    document.getElementById("uiTier3Title").innerText = t.tier3Title;
-    document.getElementById("uiTier3Badge").innerText = t.tier3Badge;
-    document.getElementById("uiPassphraseLabel").innerText = t.passphraseLabel;
-    document.getElementById("uiRecoveryLabel").innerText = t.recoveryLabel;
-    document.getElementById("uiDevicePinTitle").innerText = t.devicePinTitle;
-    document.getElementById("uiEmailTitle").innerText = t.emailTitle;
-    document.getElementById("uiNotesTitle").innerText = t.notesTitle;
-    document.getElementById("uiHotlineDisclaimer").innerText = t.hotlineDisclaimer;
+
+    // 1. 頂部主畫面與告警橫額
+    if (document.getElementById("uiAppTitle")) document.getElementById("uiAppTitle").innerText = t.appTitle;
+    if (document.getElementById("uiAppSub")) document.getElementById("uiAppSub").innerText = t.appSub;
+    if (document.getElementById("uiTamperAlert")) document.getElementById("uiTamperAlert").innerText = t.tamperAlert;
+    if (document.getElementById("btnResetAnchor")) document.getElementById("btnResetAnchor").innerText = lang === 'zh' ? "[重設錨點]" : "[Reset Anchor]";
+
+    // 2. 第一層 (Tier 1)
+    if (document.getElementById("uiTier1Title")) document.getElementById("uiTier1Title").innerText = t.tier1Title;
+    if (document.getElementById("uiTier1Badge")) document.getElementById("uiTier1Badge").innerText = t.tier1Badge;
+    if (document.getElementById("uiHotlineDisclaimer")) document.getElementById("uiHotlineDisclaimer").innerText = t.hotlineDisclaimer;
+
+    // 3. 第二層 (Tier 2)
+    if (document.getElementById("uiTier2Title")) document.getElementById("uiTier2Title").innerText = t.tier2Title;
+    const t2Badge = document.getElementById("tier2StatusBadge");
+    if (t2Badge) {
+      if (!memoryVault) {
+        t2Badge.innerText = t.tier2BadgePending;
+      } else {
+        t2Badge.innerText = currentSigValid ? t.tier2BadgeValid : t.tier2BadgeInvalid;
+      }
+    }
+
+    // 4. 第三層 (Tier 3) 標籤、輸入框與按鈕
+    if (document.getElementById("uiTier3Title")) document.getElementById("uiTier3Title").innerText = t.tier3Title;
+    if (document.getElementById("uiTier3Badge")) document.getElementById("uiTier3Badge").innerText = t.tier3Badge;
+    if (document.getElementById("tabUsePass")) document.getElementById("tabUsePass").innerText = t.tabPass || (lang === 'zh' ? "使用主密語" : "Use Passphrase");
+    if (document.getElementById("tabUseRecovery")) document.getElementById("tabUseRecovery").innerText = t.tabRec || (lang === 'zh' ? "使用紙本恢復碼" : "Use Recovery Code");
+    
+    if (document.getElementById("uiPassphraseLabel")) document.getElementById("uiPassphraseLabel").innerText = t.passphraseLabel;
+    if (document.getElementById("passphrase")) document.getElementById("passphrase").placeholder = t.passphrasePlaceholder || (lang === 'zh' ? "輸入約定家庭密語" : "Enter master passphrase");
+    if (document.getElementById("uiRecoveryLabel")) document.getElementById("uiRecoveryLabel").innerText = t.recoveryLabel;
+    if (document.getElementById("recoveryCodeInput")) document.getElementById("recoveryCodeInput").placeholder = t.recoveryPlaceholder || "RC-XXXXX-XXXXX...";
+    if (document.getElementById("btnUnlockTier3")) document.getElementById("btnUnlockTier3").innerText = t.unlockBtn || (lang === 'zh' ? "🔓 解密數碼主閘門" : "🔓 Decrypt Digital Gateway");
+    if (document.getElementById("btnLockTier3")) document.getElementById("btnLockTier3").innerText = t.lockBtn || (lang === 'zh' ? "🔒 立即鎖定第三層" : "🔒 Lock Tier 3 Now");
+
+    // 5. 第三層卡片細部標題
+    if (document.getElementById("uiDevicePinTitle")) document.getElementById("uiDevicePinTitle").innerText = t.devicePinTitle;
+    if (document.getElementById("uiEmailTitle")) document.getElementById("uiEmailTitle").innerText = t.emailTitle;
+    if (document.getElementById("uiNotesTitle")) document.getElementById("uiNotesTitle").innerText = t.notesTitle;
+
+    // 6. 底部工具列按鈕
+    if (document.getElementById("btnTriggerImport")) document.getElementById("btnTriggerImport").innerText = t.btnImport || (lang === 'zh' ? "📥 匯入 JSON 檔案" : "📥 Import JSON File");
+    if (document.getElementById("btnExport")) document.getElementById("btnExport").innerText = t.btnExport || (lang === 'zh' ? "💾 匯出目前已驗證備份" : "💾 Export Verified Backup");
+    if (document.getElementById("btnOpenEditor")) document.getElementById("btnOpenEditor").innerText = t.btnEditor || (lang === 'zh' ? "⚙️ 建立／編輯／簽署保險庫" : "⚙️ Create / Edit / Sign Vault");
+
+    // 7. 編輯器彈窗雙語同步
+    if (document.getElementById("uiEditorModalTitle")) document.getElementById("uiEditorModalTitle").innerText = lang === 'zh' ? "⚙️ 留愛心安 ‧ 保險庫編輯與簽署" : "⚙️ LeaveWell ‧ Edit & Sign Vault";
+    if (document.getElementById("uiEditorLoadHint")) document.getElementById("uiEditorLoadHint").innerText = lang === 'zh' ? "已有舊備份？載入舊 JSON 即可自動填入資料進行增刪。" : "Have a backup? Load existing JSON to autofill and edit.";
+    if (document.getElementById("btnEditorLoadExisting")) document.getElementById("btnEditorLoadExisting").innerText = lang === 'zh' ? "📂 載入舊檔編輯" : "📂 Load Existing File";
+    if (document.getElementById("uiEditorSec1Label")) document.getElementById("uiEditorSec1Label").innerText = lang === 'zh' ? "1. Ed25519 簽名金鑰管理" : "1. Ed25519 Signing Keys";
+    if (document.getElementById("btnGenKeys")) document.getElementById("btnGenKeys").innerText = lang === 'zh' ? "🔑 產生新 Ed25519 金鑰對" : "🔑 Generate Keypair";
+    if (document.getElementById("btnWipeKeys")) document.getElementById("btnWipeKeys").innerText = lang === 'zh' ? "🧹 清空輸入金鑰" : "🧹 Clear Keys";
+    if (document.getElementById("uiEditorPubKeyLabel")) document.getElementById("uiEditorPubKeyLabel").innerText = lang === 'zh' ? "公鑰 (32-byte Hex)：" : "Public Key (32-byte Hex):";
+    if (document.getElementById("uiEditorPrivKeyLabel")) document.getElementById("uiEditorPrivKeyLabel").innerText = lang === 'zh' ? "私鑰 (32-byte Hex - 本機簽署專用)：" : "Private Key (32-byte Hex - Local Sign Only):";
+    if (document.getElementById("editPublicKeyHex")) document.getElementById("editPublicKeyHex").placeholder = lang === 'zh' ? "64 Hex 字元" : "64 Hex characters";
+    if (document.getElementById("editPrivateKeyHex")) document.getElementById("editPrivateKeyHex").placeholder = lang === 'zh' ? "貼上私鑰以簽名" : "Paste private key to sign";
+    
+    if (document.getElementById("uiEditorSec2Label")) document.getElementById("uiEditorSec2Label").innerText = lang === 'zh' ? "2. 結構化保險清單 (自動產生第一層與第二層)" : "2. Insurance Policy Index (Generates Tier 1 & 2)";
+    if (document.getElementById("inputCustomName")) document.getElementById("inputCustomName").placeholder = lang === 'zh' ? "自填保險公司名稱" : "Custom Insurer Name";
+    if (document.getElementById("inputCustomHotline")) document.getElementById("inputCustomHotline").placeholder = lang === 'zh' ? "自填官方熱線 (例: +852 2800 0000)" : "Custom Hotline (e.g. +852 2800 0000)";
+    if (document.getElementById("inputAgentName")) document.getElementById("inputAgentName").placeholder = lang === 'zh' ? "顧問姓名" : "Advisor Name";
+    if (document.getElementById("inputAgentPhone")) document.getElementById("inputAgentPhone").placeholder = lang === 'zh' ? "顧問電話 (例: +852 9123 4567)" : "Advisor Phone (e.g. +852 9123 4567)";
+    if (document.getElementById("inputPolicyNum")) document.getElementById("inputPolicyNum").placeholder = lang === 'zh' ? "保單編號" : "Policy Number";
+    if (document.getElementById("inputFileLoc")) document.getElementById("inputFileLoc").placeholder = lang === 'zh' ? "存放位置 (例: 書房藍色夾)" : "File Location (e.g. Blue folder)";
+    if (document.getElementById("btnAddInsuranceItem")) document.getElementById("btnAddInsuranceItem").innerText = lang === 'zh' ? "➕ 加入此保單至清單" : "➕ Add Policy to List";
+
+    if (document.getElementById("uiEditorSec3Label")) document.getElementById("uiEditorSec3Label").innerText = lang === 'zh' ? "3. 第三層：機密數碼閘門 (AES-GCM 加密)" : "3. Tier 3: Digital Gateway Access (AES-GCM)";
+    if (document.getElementById("editDevicePin")) document.getElementById("editDevicePin").placeholder = lang === 'zh' ? "手機解鎖 PIN / 雙重驗證提示" : "Device Unlock PIN / 2FA Hints";
+    if (document.getElementById("editPrimaryEmail")) document.getElementById("editPrimaryEmail").placeholder = lang === 'zh' ? "主電郵地址 (需包含 @)" : "Primary Email (must contain @)";
+    if (document.getElementById("editMasterNotes")) document.getElementById("editMasterNotes").placeholder = lang === 'zh' ? "密碼庫 Master Key 或重要身後交代" : "Password Manager Master Key or Legacy Notes";
+    if (document.getElementById("editPassphrase")) document.getElementById("editPassphrase").placeholder = lang === 'zh' ? "主密語 (>= 12 字元)" : "Master Passphrase (>= 12 chars)";
+    if (document.getElementById("editConfirmPassphrase")) document.getElementById("editConfirmPassphrase").placeholder = lang === 'zh' ? "確認主密語" : "Confirm Master Passphrase";
+    if (document.getElementById("uiEditorRecLabel")) document.getElementById("uiEditorRecLabel").innerText = lang === 'zh' ? "紙本緊急恢復碼 (忘記密語時唯一解鎖手段)：" : "Paper Emergency Recovery Code (Sole fallback):";
+    if (document.getElementById("btnRefreshRecovery")) document.getElementById("btnRefreshRecovery").innerText = lang === 'zh' ? "重新生成" : "Regenerate";
+    if (document.getElementById("uiChkRecoveryText")) document.getElementById("uiChkRecoveryText").innerText = lang === 'zh' ? "我已完整抄寫此 52 碼恢復碼至紙本，並存於安全地點。" : "I have completely written down this 52-char code onto paper and stored it securely.";
+    if (document.getElementById("btnSignExport")) document.getElementById("btnSignExport").innerText = lang === 'zh' ? "✍️ 簽署並匯出完整 JSON" : "✍️ Sign & Export Full JSON";
+
     await updateAnchorUI();
 
+    // 重新渲染清單或空白預設字
     if (memoryVault) {
       renderTier1(memoryVault.tier1_public);
       renderTier2(memoryVault.tier1_public, memoryVault.tier2_personal_signed, currentSigValid);
+    } else {
+      const e1 = document.getElementById("uiTier1Empty");
+      const e2 = document.getElementById("uiTier2Empty");
+      if (e1) e1.innerText = t.tier1Empty;
+      if (e2) e2.innerText = t.tier2Empty;
     }
   }
 
@@ -163,7 +236,6 @@ window.LeaveWell = window.LeaveWell || {};
         renderTier2(memoryVault.tier1_public, memoryVault.tier2_personal_signed, true);
         lockTier3();
 
-        // 依備份檔是否有恢復碼切換按鈕，若無則重設回密語分頁
         const hasRec = Boolean(memoryVault.tier3_vault_encrypted && memoryVault.tier3_vault_encrypted.wrappedRecoveryDEK);
         document.getElementById("tabUseRecovery").classList.toggle("hidden", !hasRec);
         if (!hasRec) {
@@ -204,9 +276,9 @@ window.LeaveWell = window.LeaveWell || {};
         : `<span style="color:#fda4af;">${escapeHtml(item.officialHotline)} ${t.invalidPhone}</span>`;
 
       div.innerHTML = `
-        <div style="font-weight:700; color:#34d399;">🏢 ${escapeHtml(item.company)} (${escapeHtml(item.type || "壽險")})</div>
+        <div style="font-weight:700; color:#34d399;">🏢 ${escapeHtml(item.company)} (${escapeHtml(item.type || (currentLang === 'zh' ? "壽險" : "Life"))})</div>
         <div style="margin-top:0.25rem;">📞 ${t.officialHotline}: ${phoneHtml}</div>
-        <div style="font-size:0.75rem; color:#a7f3d0; margin-top:0.2rem;">📱 ${t.officialApp}: ${escapeHtml(item.officialApp || "官網查詢")}</div>
+        <div style="font-size:0.75rem; color:#a7f3d0; margin-top:0.2rem;">📱 ${t.officialApp}: ${escapeHtml(item.officialApp || (currentLang === 'zh' ? "官網查詢" : "Official Portal"))}</div>
       `;
       container.appendChild(div);
     });
@@ -267,12 +339,12 @@ window.LeaveWell = window.LeaveWell || {};
 
     if (isRecoveryMode) {
       const rawRc = document.getElementById("recoveryCodeInput").value.trim();
-      if (!rawRc) return alert("請輸入紙本恢復碼！");
+      if (!rawRc) return alert(currentLang === 'zh' ? "請輸入紙本恢復碼！" : "Please enter recovery code!");
       secretInput = Crypto.base32ToUint8(rawRc);
-      if (secretInput.length !== 32) return alert("恢復碼長度非法 (需為 32 位元組 Base32)！");
+      if (secretInput.length !== 32) return alert(currentLang === 'zh' ? "恢復碼長度非法 (需為 32 位元組 Base32)！" : "Invalid recovery code length!");
     } else {
       secretInput = document.getElementById("passphrase").value;
-      if (!secretInput) return alert("請輸入密語！");
+      if (!secretInput) return alert(currentLang === 'zh' ? "請輸入密語！" : "Please enter passphrase!");
     }
 
     try {
@@ -294,8 +366,8 @@ window.LeaveWell = window.LeaveWell || {};
       const errMsg = document.getElementById("authErrorMsg");
       errMsg.style.display = "block";
       errMsg.innerText = res.locked 
-        ? `⛔ 連續錯誤達 ${MAX_FAILS} 次，已鎖定 15 分鐘。`
-        : `❌ 認證失敗 (${res.fails}/${MAX_FAILS})。密語或恢復碼不符。`;
+        ? (currentLang === 'zh' ? `⛔ 連續錯誤達 ${MAX_FAILS} 次，已鎖定 15 分鐘。` : `⛔ Locked for 15 minutes due to ${MAX_FAILS} failed attempts.`)
+        : (currentLang === 'zh' ? `❌ 認證失敗 (${res.fails}/${MAX_FAILS})。密語或恢復碼不符。` : `❌ Auth failed (${res.fails}/${MAX_FAILS}). Secret or code mismatch.`);
     }
   }
 
@@ -352,7 +424,7 @@ window.LeaveWell = window.LeaveWell || {};
       d.style = "background:#0b0f19; padding:0.4rem; border-radius:4px; font-size:0.75rem; margin-bottom:0.25rem; display:flex; justify-content:space-between; align-items:center;";
       d.innerHTML = `
         <span>🏢 ${escapeHtml(it.company)} (${escapeHtml(it.type)}) - 👤 ${escapeHtml(it.agentName)}</span>
-        <button style="min-width:40px; padding:2px 4px; background:#e11d48; color:white; border-radius:4px;" data-del="${idx}">刪除</button>
+        <button style="min-width:40px; padding:2px 4px; background:#e11d48; color:white; border-radius:4px;" data-del="${idx}">${currentLang === 'zh' ? "刪除" : "Delete"}</button>
       `;
       box.appendChild(d);
     });
@@ -377,7 +449,7 @@ window.LeaveWell = window.LeaveWell || {};
       if (el) el.value = "";
     });
 
-    document.getElementById("fingerprintPreview").innerText = "指紋: 待產生";
+    document.getElementById("fingerprintPreview").innerText = currentLang === 'zh' ? "指紋: 待產生" : "Fingerprint: Pending";
     document.getElementById("chkRecoveryConfirmed").checked = false;
     document.getElementById("editorInsurerSelect").selectedIndex = 0;
     document.getElementById("editorInsurerType").selectedIndex = 0;
@@ -388,7 +460,7 @@ window.LeaveWell = window.LeaveWell || {};
     sessionStorage.removeItem("leavewell_editor_items");
 
     generatedRecoveryCode = "";
-    document.getElementById("displayRecoveryCode").innerText = "尚未生成";
+    document.getElementById("displayRecoveryCode").innerText = currentLang === 'zh' ? "尚未生成" : "Not generated yet";
   }
 
   function loadExistingJsonToEditor(parsed) {
@@ -419,12 +491,14 @@ window.LeaveWell = window.LeaveWell || {};
       if (parsed.tier2_personal_signed.publicKeyHex) {
         document.getElementById("editPublicKeyHex").value = parsed.tier2_personal_signed.publicKeyHex;
         Crypto.computeFingerprint(parsed.tier2_personal_signed.publicKeyHex).then(fp => {
-          document.getElementById("fingerprintPreview").innerText = "指紋: " + fp;
+          document.getElementById("fingerprintPreview").innerText = (currentLang === 'zh' ? "指紋: " : "Fingerprint: ") + fp;
         });
       }
-      alert("⚠️ 已載入舊檔至編輯器（此操作未經驗簽）。請確認各欄位內容正確無誤後再進行簽署！");
+      alert(currentLang === 'zh' 
+        ? "⚠️ 已載入舊檔至編輯器（此操作未經驗簽）。請確認各欄位內容正確無誤後再進行簽署！"
+        : "⚠️ Loaded file into editor (Unverified). Please confirm details before signing!");
     } catch (e) {
-      alert("載入舊檔失敗：" + e.message);
+      alert((currentLang === 'zh' ? "載入舊檔失敗：" : "Failed to load file: ") + e.message);
     }
   }
 
@@ -435,20 +509,20 @@ window.LeaveWell = window.LeaveWell || {};
     const confirmPass = document.getElementById("editConfirmPassphrase").value;
 
     if (pubHex.length !== 64 || privHex.length !== 64) {
-      return alert("公鑰與私鑰需為 64 個十六進位字元 (32 bytes)！");
+      return alert(currentLang === 'zh' ? "公鑰與私鑰需為 64 個十六進位字元 (32 bytes)！" : "Keys must be 64 hex characters (32 bytes)!");
     }
 
     const isMatch = await Crypto.verifyKeyPairMatch(pubHex, privHex);
     if (!isMatch) {
-      return alert("⛔ 安全阻斷：公鑰與私鑰不匹配！簽名無法通過自我驗證，請重新檢查。");
+      return alert(currentLang === 'zh' ? "⛔ 安全阻斷：公鑰與私鑰不匹配！簽名無法通過自我驗證，請重新檢查。" : "⛔ Security Block: Keypair mismatch!");
     }
 
-    if (!pass || pass.length < 12) return alert("主密語長度需至少 12 字元！");
-    if (pass !== confirmPass) return alert("兩次輸入的主密語不相符！");
-    if (currentEditorItems.length === 0) return alert("請至少加入一筆保單項目！");
+    if (!pass || pass.length < 12) return alert(currentLang === 'zh' ? "主密語長度需至少 12 字元！" : "Passphrase must be at least 12 characters!");
+    if (pass !== confirmPass) return alert(currentLang === 'zh' ? "兩次輸入的主密語不相符！" : "Passphrases do not match!");
+    if (currentEditorItems.length === 0) return alert(currentLang === 'zh' ? "請至少加入一筆保單項目！" : "Please add at least one policy!");
 
     if (!document.getElementById("chkRecoveryConfirmed").checked) {
-      return alert("⚠ 請先抄寫紙本恢復碼，並勾選「我已完整抄寫」確認框！");
+      return alert(currentLang === 'zh' ? "⚠ 請先抄寫紙本恢復碼，並勾選「我已完整抄寫」確認框！" : "⚠ Please write down the recovery code and check the confirmation box!");
     }
 
     try {
@@ -537,17 +611,19 @@ window.LeaveWell = window.LeaveWell || {};
       wipeEditorFields();
       document.getElementById("editorModal").classList.add("hidden");
 
-      alert(`🎉 留愛心安 ‧ 打包完成！\n簽署公鑰 SHA-256 指紋為：\n${fp}\n已自動設為本機信任錨。請妥善保存下載之 JSON 與紙本恢復碼。`);
+      alert(currentLang === 'zh'
+        ? `🎉 留愛心安 ‧ 打包完成！\n簽署公鑰 SHA-256 指紋為：\n${fp}\n已自動設為本機信任錨。請妥善保存下載之 JSON 與紙本恢復碼。`
+        : `🎉 LeaveWell ‧ Export Complete!\nSigner Fingerprint:\n${fp}\nSet as trusted anchor. Please safeguard your backup JSON and paper recovery code.`);
     } catch (err) {
-      alert("簽署過程發生錯誤：" + err.message);
+      alert((currentLang === 'zh' ? "簽署過程發生錯誤：" : "Signing error: ") + err.message);
     }
   }
 
   window.addEventListener("DOMContentLoaded", () => {
     const sel = document.getElementById("editorInsurerSelect");
-    sel.innerHTML = '<option value="">-- 請選擇保險公司 --</option>';
+    sel.innerHTML = `<option value="">${currentLang === 'zh' ? "-- 請選擇保險公司 --" : "-- Select Insurance Provider --"}</option>`;
     HK_INSURERS.forEach(i => sel.innerHTML += `<option value="${i.name}">${i.name}</option>`);
-    sel.innerHTML += '<option value="__OTHER__">➕ 其他保險公司 (手動自填)</option>';
+    sel.innerHTML += `<option value="__OTHER__">${currentLang === 'zh' ? "➕ 其他保險公司 (手動自填)" : "➕ Other Insurer (Manual Input)"}</option>`;
 
     sel.addEventListener("change", (e) => {
       const isOther = e.target.value === "__OTHER__";
@@ -558,10 +634,10 @@ window.LeaveWell = window.LeaveWell || {};
     document.getElementById("btnLangEn").addEventListener("click", () => setLanguage("en"));
 
     document.getElementById("btnResetAnchor").addEventListener("click", async () => {
-      if (confirm("確定要重設本機信任錨？下次匯入檔案時將重新核對指紋。")) {
+      if (confirm(currentLang === 'zh' ? "確定要重設本機信任錨？下次匯入檔案時將重新核對指紋。" : "Reset trust anchor? You will re-verify the fingerprint on next import.")) {
         localStorage.removeItem("vault_anchor_pub");
         await updateAnchorUI();
-        alert("本機信任錨已清除。");
+        alert(currentLang === 'zh' ? "本機信任錨已清除。" : "Local trust anchor cleared.");
       }
     });
 
@@ -609,18 +685,18 @@ window.LeaveWell = window.LeaveWell || {};
       document.getElementById("editPublicKeyHex").value = kp.pubHex;
       document.getElementById("editPrivateKeyHex").value = kp.privHex;
       const fp = await Crypto.computeFingerprint(kp.pubHex);
-      document.getElementById("fingerprintPreview").innerText = "指紋: " + fp;
-      alert("🔑 已生成全新 Ed25519 金鑰對！私鑰已填入本機簽署欄位。");
+      document.getElementById("fingerprintPreview").innerText = (currentLang === 'zh' ? "指紋: " : "Fingerprint: ") + fp;
+      alert(currentLang === 'zh' ? "🔑 已生成全新 Ed25519 金鑰對！私鑰已填入本機簽署欄位。" : "🔑 Keypair generated!");
     });
 
     document.getElementById("btnWipeKeys").addEventListener("click", () => {
       document.getElementById("editPublicKeyHex").value = "";
       document.getElementById("editPrivateKeyHex").value = "";
-      document.getElementById("fingerprintPreview").innerText = "指紋: 待產生";
+      document.getElementById("fingerprintPreview").innerText = currentLang === 'zh' ? "指紋: 待產生" : "Fingerprint: Pending";
     });
 
     document.getElementById("btnRefreshRecovery").addEventListener("click", () => {
-      if (generatedRecoveryCode && !confirm("重新生成會使舊恢復碼永久作廢，確定要產生新恢復碼嗎？")) return;
+      if (generatedRecoveryCode && !confirm(currentLang === 'zh' ? "重新生成會使舊恢復碼永久作廢，確定要產生新恢復碼嗎？" : "Regenerating will revoke previous code. Proceed?")) return;
       refreshRecoveryCode();
     });
 
@@ -633,7 +709,7 @@ window.LeaveWell = window.LeaveWell || {};
         try {
           const p = JSON.parse(evt.target.result);
           loadExistingJsonToEditor(p);
-        } catch (err) { alert("讀取舊檔失敗: " + err.message); }
+        } catch (err) { alert((currentLang === 'zh' ? "讀取舊檔失敗: " : "Failed: ") + err.message); }
         finally { e.target.value = ""; }
       };
       r.readAsText(f);
@@ -647,21 +723,21 @@ window.LeaveWell = window.LeaveWell || {};
       if (selVal === "__OTHER__") {
         companyName = document.getElementById("inputCustomName").value.trim();
         hotline = document.getElementById("inputCustomHotline").value.trim();
-        app = "官方網站";
-        if (!companyName || !hotline) return alert("請填寫自訂公司名稱與官方熱線！");
+        app = currentLang === 'zh' ? "官方網站" : "Official Website";
+        if (!companyName || !hotline) return alert(currentLang === 'zh' ? "請填寫自訂公司名稱與官方熱線！" : "Please enter custom company name and hotline!");
       } else if (selVal) {
         const found = HK_INSURERS.find(i => i.name === selVal);
         companyName = found.name;
         hotline = found.hotline;
         app = found.app;
       } else {
-        return alert("請選擇保險公司！");
+        return alert(currentLang === 'zh' ? "請選擇保險公司！" : "Please select an insurer!");
       }
 
-      const agentName = document.getElementById("inputAgentName").value.trim() || "未指派";
+      const agentName = document.getElementById("inputAgentName").value.trim() || (currentLang === 'zh' ? "未指派" : "Unassigned");
       const agentPhone = document.getElementById("inputAgentPhone").value.trim() || hotline;
-      const policyNum = document.getElementById("inputPolicyNum").value.trim() || "待查";
-      const fileLoc = document.getElementById("inputFileLoc").value.trim() || "書房文件夾";
+      const policyNum = document.getElementById("inputPolicyNum").value.trim() || (currentLang === 'zh' ? "待查" : "TBD");
+      const fileLoc = document.getElementById("inputFileLoc").value.trim() || (currentLang === 'zh' ? "書房文件夾" : "Study folder");
 
       currentEditorItems.push({
         company: companyName,
@@ -703,6 +779,7 @@ window.LeaveWell = window.LeaveWell || {};
       lockTier3();
     });
 
+    // 初始化語言同步
     setLanguage(currentLang);
   });
 })();
