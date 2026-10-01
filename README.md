@@ -9,19 +9,20 @@
 
 ## 繁體中文
 
-**留愛心安 (LeaveWell)** 是一個純本地端、零後端伺服器（Zero-Knowledge / Offline-First）的家庭應急資產導航保險庫。
+**留愛心安 (LeaveWell)** 是一個純本地端、零後端伺服器（Zero-Knowledge / Offline-First）的家庭應急資產導航金庫。
 
-面對至親突發變故，家屬最需要的不是繁複的財務報表，而是**「即時的保險索償導航」**與**「關鍵數碼存取權限」**。本工具透過三層漸進式架構，兼顧家人的免密急救可用性與金融級防釣魚、防外洩密碼學安全。
+面對至親突發變故，家屬最需要的不是繁複的財務報表，而是**「即時的保險索償導航」**與**「關鍵數碼存取權限」**。本工具採用清晰的**「雙層漸進式架構」**，在生時嚴守個人數碼隱私，身後給予家人最即時、零門檻的理賠指引。
 
 ### 🌟 核心特色
 
 - **零依賴與純離線 (Zero-Dependency & Offline-First)**：無引入任何外部 NPM 套件或遠端 CDN，直接使用瀏覽器原生 Web Crypto API，支援離線 `file://` 雙擊即開。
-- **三層存取架構 (3-Tier Progressive Access)**：
-  1. **第一層：公開急救層 (Public Triage)**：官方保險索償熱線與 App 查核渠道，免密碼即開即閱。
-  2. **第二層：個人顧問層 (Personal Index)**：專屬經紀電話與保單存放位置，採用 **Ed25519 數位簽名** 與 **TOFU 信任錨 (SHA-256 64-bit 指紋)** 保護，防止釣魚置換電話。
-  3. **第三層：數碼金庫層 (Digital Vault)**：手機解鎖 PIN、主 Email 存取提示等核心憑證，採用 **AES-GCM-256 + 雙重 AAD 信封加密 (PBKDF2 600,000 次疊代)**。
-- **雙重解鎖路徑 (Dual-KEK Recovery)**：同時支援約定家庭密語或 52 碼紙本緊急恢復碼（Crockford Base32），避免單點遺忘死鎖。
-- **零明文留存 (Zero-Plaintext Residual)**：本機儲存不留存任何明文，關閉標籤頁自動清除記憶體；內置 180 秒會話超時與連續錯誤 15 分鐘指數鎖定。
+- **雙層漸進存取架構 (Two-Tier Progressive Access)**：
+  1. **🟢 第一層：公開名冊（免密碼・一開即睇）**：自動列出生前持有的保險公司名冊與險種分類。家人無需密碼即可致電官方索償部，報出死者英文全名及身份證號碼核查保單，免除「不知買過哪間保險」的慌亂。
+  2. **🔴 第二層：機密金庫（單一密碼／紙本恢復碼）**：涵蓋專屬經紀電話、保單編號、實體合約位置、手機 PIN 及主電郵線索。採用 **AES-GCM-256 + 雙重 AAD 信封加密 (PBKDF2 600,000 次疊代)**。
+- **本地免密快取 (Instant Local Cache)**：本機完成設定或匯入後，加密檔案自動快取於本地瀏覽器。日後家人打開死者手機或常用電腦，**免找檔案、免匯入，第一層保險名冊即刻呈現在眼前**。
+- **密語解密反填編輯 (Load & Edit)**：日後增減保單或修改資料時，直接載入舊檔並輸入密語，所有公開與機密資料自動解密反填至編輯器，隨時修改並重新打包。
+- **紙本恢復碼兜底 (Paper Fallback)**：支援 52 碼紙本緊急恢復碼（Crockford Base32），可與實體遺囑或存摺鎖入保險箱，避免單點遺忘死鎖。
+- **動態記憶體防禦 (Memory Safety)**：本機無明文留存，關閉視窗即時抹除金鑰記憶體；內置 180 秒會話超時鎖定與連續 5 次錯誤強制鎖定 15 分鐘機制。
 
 ---
 
@@ -29,47 +30,54 @@
 
 | 場景 / 攻擊面 | 防禦狀態 | 防護機制與說明 |
 | :--- | :---: | :--- |
-| **隨身碟遺失 / 他人窺探** | ✅ 完全防禦 | 第三層使用 AES-GCM-256 加密，未經密語或恢復碼在數學上無法破解。 |
-| **經紀電話竄改 / 精準釣魚** | ✅ 完全防禦 | 第二層由持有人私鑰簽名，JSON 一旦被改動，驗簽即刻報警並強制隱藏資料。 |
-| **離線暴力破解密語** | ✅ 高度防禦 | PBKDF2-SHA256 600,000 次疊代，搭配 15 分鐘錯誤鎖定機制。 |
-| **執行檔/前端被替換 (XSS)** | ⚠️ 邊界限制 | 純前端無法防禦 HTML 本體被惡意置換，建議將檔案備份於防寫唯讀媒介。 |
-| **實體紙本恢復碼洩漏** | ⚠️ 邊界限制 | 紙本恢復碼等同於主金鑰，嚴禁拍照或數碼傳輸，須如房契印鑑般鎖於保險箱。 |
+| **隨身碟遺失 / 他人窺探** | ✅ 完全防禦 | 核心金庫使用 AES-GCM-256 強加密，未經家庭密語或恢復碼在數學上無法破解。 |
+| **生前借用手機 / 隱私外洩** | ✅ 完全防禦 | 即使他人打開網頁，第二層經紀電話、保單號碼與手機 PIN 依然處於加密狀態，無法查閱。 |
+| **離線暴力破解密語** | ✅ 高度防禦 | PBKDF2-SHA256 600,000 次疊代，搭配錯誤鎖定防護，抵禦離線字典攻擊。 |
+| **執行檔/前端被替換 (XSS)** | ⚠️ 邊界限制 | 純前端架構無法防禦 HTML 本體被惡意置換，建議將檔案備份於防寫唯讀隨身碟。 |
+| **實體紙本恢復碼洩漏** | ⚠️ 邊界限制 | 紙本恢復碼等同於保險庫鑰匙，嚴禁拍照或數碼傳輸，須如房契印鑑般鎖於保險箱。 |
 
 ---
 
 ### 🚀 快速使用指引
 
-#### 1. 建立與備份 (日常維護)
-1. 使用瀏覽器開啟 [LeaveWell 頁面](https://jackylawck.github.io/LeaveWell/) 或本地 `index.html`。
-2. 點擊右下方 **「⚙️ 建立／編輯／簽署保險庫」**。
-3. 點擊 **「🔑 產生新 Ed25519 金鑰對」**，妥善保存私鑰（私鑰僅暫存於本地記憶體）。
-4. 選擇香港主流保險公司或自填，新增保單項目、經紀電話及文件存放處。
-5. 填寫第三層機密（手機 PIN、主 Email）並設定家庭密語。
-6. 將畫面產生的 **52 碼紙本恢復碼 (RC-...)** 抄寫於實體紙本，勾選確認。
-7. 點擊 **「✍️ 簽署並匯出完整 JSON」**，下載產出的備份檔。
+#### 1. 建立保險庫 (自己操作)
+1. 使用瀏覽器開啟 [LeaveWell 頁面](https://jackylawck.github.io/LeaveWell/) 或雙擊本地 `index.html`。
+2. 點擊右下方 **「⚙️ 建立／修改保險庫」**。
+3. 選擇保險公司與險種，填寫顧問電話、保單號碼及合約位置（保險公司名自動納入第一層公開名冊）。
+4. 填寫第二層機密（手機 PIN、主 Email），設定高強度家庭密語（≥ 12 字元）。
+5. 抄寫產生的 **52 碼紙本恢復碼 (RC-...)** 於實體小卡，勾選確認。
+6. 點擊 **「💾 加密並匯出完整 JSON」**，下載備份檔並同步寫入本機安全快取。
 
-#### 2. 身後應急檢視 (家人使用)
-1. 開啟 `index.html`，點擊 **「📥 匯入 JSON 檔案」**。
-2. 首次匯入時，核對彈出的 **SHA-256 公鑰指紋** 是否與「紙本應急小卡」一致，確認後自動建立本機信任錨。
-3. 頂部即時顯示保險公司官方熱線及專屬顧問電話。
-4. 如需取得手機解鎖 PIN 或登入 Email 查單，於第三層輸入家庭密語或紙本恢復碼解鎖。
+#### 2. 身後應急查閱 (家人操作)
+- **情境 A（使用死者手機/常用電腦）**：直接打開 LeaveWell，**第一層保險公司名冊已自動顯示**。
+- **情境 B（使用新裝置/USB 開啟）**：點擊 **「📥 匯入 JSON 檔案」** 載入備份檔，第一層名冊即刻顯示。
+- **解鎖詳細資料**：如需聯絡經紀或解鎖手機，從保險箱取出實體小卡，於第二層輸入密語或 52 碼紙本恢復碼。
+
+#### 3. 日後修改與年檢
+- 點擊 **「⚙️ 建立／修改保險庫」** ➔ 點擊 **「📂 載入舊檔編輯」**（或直接同意解密本機快取）。
+- 輸入原有的家庭密語，舊資料自動反填至編輯器。
+- 修改完成後，設定密語重新匯出最新 JSON 檔替換舊備份。
 
 ---
 
 ### 📄 紙本應急小卡製作建議
 
-建議將下列資訊抄寫或列印於 A4 四分之一折疊卡片，與備份隨身碟一同存放於保險箱：
+建議將下列資訊抄寫或列印於 A4 四分之一折疊卡片，與備份隨身碟一同存放於家中實體保險箱：
 
 ```text
 ┌───────────────────────────────────────────────────────────────────┐
 │                     🛡️ 留愛心安 · LeaveWell                        │
 │                   家庭緊急應急資產導航卡 (存根)                     │
 ├───────────────────────────────────────────────────────────────────┤
-│ 1. 工具檔案位置：客廳專用隨身碟 LeaveWell 目錄                     │
-│ 2. 簽署公鑰指紋：[ ____-____-____-____ ] (64-bit SHA-256)        │
-│ 3. 紙本緊急恢復碼：RC-[ ____________________________________ ]    │
+│ 1. 檔案位置：客廳專用隨身碟 LeaveWell 目錄                        │
+│ 2. 第一步（免密碼）：                                              │
+│    雙擊打開 LeaveWell，頂部即時顯示所有持有保單之保險公司。         │
+│    可直接致電官方熱線，報出受保人英文姓名及身份證號碼核查保單。    │
+│ 3. 第二步（解鎖經紀電話及手機 PIN）：                              │
+│    請輸入家庭約定密語，或使用下方 52 碼紙本恢復碼解鎖：             │
+│    RC-[ ________________________________________________ ]        │
 │                                                                   │
-│ 【提示】此卡等同於印鑑，嚴禁拍照上傳；遇事優先致電第一層官方熱線。│
+│ 【重要提示】此卡等同於印鑑，嚴禁拍照上傳或透過通訊軟體傳送。       │
 └───────────────────────────────────────────────────────────────────┘
 
 ```
@@ -78,19 +86,20 @@
 
 ## English
 
-**LeaveWell (留愛心安)** is a zero-knowledge, offline-first personal emergency vault designed to assist family members in locating vital insurance policies and recovering essential digital credentials during sudden life events.
+**LeaveWell (留愛心安)** is a zero-knowledge, offline-first personal emergency vault designed to assist family members in locating insurance policies and vital digital credentials during sudden life events.
 
 ### 🌟 Key Highlights
 
-* **Zero-Dependency & Offline-First**: Built with vanilla HTML/CSS/JavaScript and the Web Crypto API. Works completely offline via `file://`.
-* **3-Tier Progressive Disclosure**:
-1. **Tier 1 (Public Triage)**: Official insurer hotline directory (password-free, verifiable).
-2. **Tier 2 (Personal Index)**: Personal advisor details and physical contract locations protected by **Ed25519 digital signature** and **TOFU trust anchoring (SHA-256 64-bit fingerprint)** to prevent fraud.
-3. **Tier 3 (Digital Vault)**: Device PINs, primary email clues, and legacy access directives encrypted via **AES-GCM-256 with Dual AAD** (PBKDF2 600,000 iterations).
+* **Zero-Dependency & Offline-First**: Pure vanilla HTML/CSS/JavaScript using the native Web Crypto API. Runs offline via `file://`.
+* **Two-Tier Progressive Disclosure**:
+1. **🟢 Tier 1: Public Insurance Directory (Password-Free)**: Displays all held insurers and policy types. Family members can initiate claim verification immediately by calling the insurer and providing the insured's full legal name and HKID.
+2. **🔴 Tier 2: Confidential Emergency Vault (Passphrase / Recovery Code Required)**: Protects advisor contacts, policy numbers, document locations, device PINs, and primary email credentials via **AES-GCM-256 with Dual AAD** (PBKDF2 600,000 iterations).
 
 
-* **Dual-KEK Recovery Mechanism**: Supports decryption via either master family passphrase or a 52-character paper Emergency Recovery Code (Crockford Base32).
-* **Zero Plaintext Persistence**: Plaintext is never stored in `localStorage`. Features automatic memory wiping, 180-second session lock, and exponential backoff lockout after 5 failed attempts.
+* **Instant Local Cache**: Once configured, the vault is securely cached in local storage. Family members opening the app on the deceased's personal device will see the Tier 1 directory immediately without having to locate backup files.
+* **Load & Edit Workflow**: Easily update records by loading the existing JSON and entering the passphrase. Data is decrypted and autofilled into the editor for seamless updates.
+* **Paper Fallback**: Includes a 52-character Emergency Recovery Code (Crockford Base32) designed to be physically locked in a safe box, preventing lockout if the passphrase is forgotten.
+* **In-Memory Protection**: Zero plaintext persisted to disk. Features 180-second session auto-lock and exponential lockout after 5 consecutive failed attempts.
 
 ---
 
@@ -98,23 +107,24 @@
 
 | Scenario / Attack Vector | Protection Level | Defense Mechanism |
 | --- | --- | --- |
-| **Lost USB / Physical Sniffing** | ✅ Fully Protected | Tier 3 ciphertext is mathematically infeasible to crack without passphrase or recovery code. |
-| **Advisor Contact Spoofing** | ✅ Fully Protected | Signed via Ed25519; any payload tampering triggers immediate visual isolation and warnings. |
-| **Offline Brute Force** | ✅ Strong Defense | PBKDF2-SHA256 with 600,000 iterations and progressive lockouts. |
-| **HTML Source Tampering (XSS)** | ⚠️ Boundary Limit | Pure client-side code cannot prevent binary replacement of HTML itself. Use read-only media. |
-| **Physical Paper Code Compromise** | ⚠️ Boundary Limit | The paper recovery code equals master access. Must be kept physically secured in a lockbox. |
+| **Lost USB / Physical Sniffing** | ✅ Fully Protected | Tier 2 ciphertext is mathematically infeasible to decrypt without the passphrase or recovery code. |
+| **Borrowing Device While Alive** | ✅ Fully Protected | Sensitive PINs and notes remain encrypted; only generic insurer names are visible without unlocking. |
+| **Offline Brute Force** | ✅ Strong Defense | PBKDF2-SHA256 with 600,000 iterations protects against offline dictionary attacks. |
+| **HTML Source Tampering (XSS)** | ⚠️ Boundary Limit | Client-side code cannot prevent binary replacement of the HTML file itself. Store on write-protected media. |
+| **Physical Paper Code Compromise** | ⚠️ Boundary Limit | The paper recovery code grants full Tier 2 access. Must be kept secured alongside legal wills. |
 
 ---
 
 ### 🚀 Usage Guide
 
-1. **Deploy/Run**: Open `index.html` in any modern web browser or visit [GitHub Pages](https://www.google.com/url?sa=E&source=gmail&q=https://jackylawck.github.io/LeaveWell/).
-2. **Editor**: Click **"⚙️ Create / Edit / Sign Vault"** to generate keys, input policies, and set up your passphrase.
-3. **Recovery Card**: Accurately transcribe the generated **Emergency Recovery Code** onto physical paper.
-4. **Export**: Sign and export the `.json` vault. Distribute the file alongside the offline HTML package.
+1. **Create / Edit**: Open `index.html` or visit [GitHub Pages](https://jackylawck.github.io/LeaveWell/). Click **"⚙️ Create / Edit Vault"**.
+2. **Add Policies**: Enter insurance providers (automatically indexed in Tier 1) and advisor/credential details.
+3. **Set Passphrase & Backup**: Set a strong passphrase (≥ 12 chars), transcribe the 52-char paper recovery code, and click **"💾 Encrypt & Export Full JSON"**.
+4. **Maintenance**: Click **"📂 Load Existing File"** anytime, enter your passphrase to edit existing records, and re-export the updated vault.
 
 ---
 
 ## 📜 License
 
 Distributed under the [MIT License](https://www.google.com/search?q=LICENSE).
+
