@@ -1,5 +1,5 @@
 /**
- * i18n.js - 留愛心安 LeaveWell 雙語字典
+ * i18n.js - 留愛心安 LeaveWell 雙語字典 (深凍結版)
  */
 window.LeaveWell = window.LeaveWell || {};
 
@@ -17,6 +17,12 @@ window.LeaveWell = window.LeaveWell || {};
     zh: {
       appTitle: "🛡️ 留愛心安 LeaveWell",
       appSub: "留愛於生，遇事心安 ‧ 三層家庭應急資產索引 ‧ 純本地加密",
+      guideTitle: "💡 家人緊急應急指南（3 步即用）",
+      guideCollapse: "[收起指引]",
+      guideExpand: "[展開指引]",
+      guideStep1: "<strong>搵備份檔</strong>：找出隨身碟或書房文件夾內之 <code>LeaveWell-Vault-*.json</code> 檔案。",
+      guideStep2: "<strong>撳匯入</strong>：點擊底部 <span class=\"highlight-btn\">📥 匯入 JSON 檔案</span> 上傳，首次開啟核對小卡指紋按確認。",
+      guideStep3: "<strong>即時查閱</strong>：頂部綠色/藍色區會<strong>即時免密碼顯示</strong>保險經紀電話；如需解鎖手機，於紅色區輸入約定密語或抄寫的 52 碼恢復碼。",
       lockTimer: "會話倒數",
       tamperAlert: "⛔ 安全防禦阻斷：Ed25519 簽名無效！公鑰與本機信任錨不相符，或檔案資料曾遭未授權竄改。請直接致電第一層官方熱線核實。",
       tier1Title: "🟢 第一層：官方保險索償熱線（免密碼・官方防偽）",
@@ -56,6 +62,12 @@ window.LeaveWell = window.LeaveWell || {};
     en: {
       appTitle: "🛡️ LeaveWell 留愛心安",
       appSub: "Anchored in Love, Leave Well for Kin ‧ 3-Tier Emergency Life Index ‧ Zero-Knowledge",
+      guideTitle: "💡 Quick Emergency Guide (3 Steps)",
+      guideCollapse: "[Hide Guide]",
+      guideExpand: "[Show Guide]",
+      guideStep1: "<strong>Find Backup</strong>: Locate the <code>LeaveWell-Vault-*.json</code> file in your USB or folder.",
+      guideStep2: "<strong>Click Import</strong>: Click <span class=\"highlight-btn\">📥 Import JSON File</span> below. Verify fingerprint on first use.",
+      guideStep3: "<strong>Instant Access</strong>: Top green/blue panels show insurer contacts immediately; unlock device PIN via passphrase or recovery code below.",
       lockTimer: "Session Timeout",
       tamperAlert: "⛔ Security Alert: Invalid Signature! Key does not match local trust anchor or content was tampered. Please call Tier 1 hotlines.",
       tier1Title: "🟢 Tier 1: Official Insurance Claims Hotlines (No Password ‧ Public Verifiable)",
