@@ -11,16 +11,15 @@ body { background: var(--bg); color: var(--text); min-height: 100vh; display: fl
 .vault-container { background: var(--card); border: 1px solid var(--border); border-radius: 14px; width: 100%; max-width: 740px; padding: 1.5rem; box-shadow: 0 15px 35px rgba(0,0,0,0.6); }
 
 h1 { font-size: 1.25rem; font-weight: 700; }
-p.sub { font-size: 0.75rem; color: var(--sub); margin-top: 0.25rem; margin-bottom: 1.25rem; }
+p.sub { font-size: 0.75rem; color: var(--sub); margin-top: 0.25rem; margin-bottom: 1rem; }
 
 .header-row { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 0.5rem; }
 .lang-switch { display: flex; gap: 0.4rem; align-items: center; }
-.anchor-status-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem; font-size: 0.7rem; color: var(--sub); }
-.btn-text-danger { background: none; border: none; color: #f87171; text-decoration: underline; cursor: pointer; padding: 0 4px; font-size: 0.7rem; }
+.session-status-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem; font-size: 0.7rem; color: var(--sub); }
 .btn-text-sub { background: none; border: none; color: var(--sub); cursor: pointer; font-size: 0.7rem; }
 
-/* 家人緊急應急指引樣式 */
-.guide-box { background: #1e293b; border: 1px solid #38bdf8; border-radius: 8px; padding: 0.75rem 1rem; margin-bottom: 1rem; }
+/* 💡 家人緊急指引樣式 */
+.guide-box { background: #1e293b; border: 1px solid #38bdf8; border-radius: 8px; padding: 0.75rem 1rem; margin-bottom: 1.25rem; }
 .guide-title { display: flex; justify-content: space-between; align-items: center; font-size: 0.8rem; font-weight: 700; color: #38bdf8; }
 .guide-content { margin-top: 0.5rem; font-size: 0.75rem; color: #cbd5e1; display: flex; flex-direction: column; gap: 0.4rem; }
 .guide-step { display: flex; align-items: flex-start; gap: 0.5rem; line-height: 1.4; }
@@ -28,26 +27,21 @@ p.sub { font-size: 0.75rem; color: var(--sub); margin-top: 0.25rem; margin-botto
 .highlight-btn { background: #334155; color: #f8fafc; padding: 2px 6px; border-radius: 4px; border: 1px solid #475569; }
 
 .panel { border-radius: 10px; padding: 1rem; margin-bottom: 1.25rem; border: 1px solid; }
-.tier1 { background: var(--success-bg); border-color: var(--success-border); color: #ecfdf5; }
-.tier2 { background: #132338; border-color: #2563eb; }
-.tier3 { background: #181b2a; border-color: var(--border); }
+.tier-public { background: var(--success-bg); border-color: var(--success-border); color: #ecfdf5; }
+.tier-secret { background: #181b2a; border-color: var(--border); }
 
 .panel-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem; }
 .panel-head h2 { font-size: 0.9rem; font-weight: 700; }
-.tier2 .panel-head h2 { color: #60a5fa; }
-.tier3 .panel-head h2 { color: #f87171; }
+.tier-secret .panel-head h2 { color: #f87171; }
 
 .badge { font-size: 0.65rem; font-weight: 700; padding: 2px 8px; border-radius: 9999px; text-transform: uppercase; }
 .badge-green { background: #059669; color: white; }
-.badge-blue { background: #2563eb; color: white; }
 .badge-red { background: #e11d48; color: white; }
 
-.empty-hint { font-size: 0.8rem; color: var(--sub); font-style: italic; }
-.tier1-hint { color: #a7f3d0; }
-.disclaimer-text { font-size: 0.65rem; color: #a7f3d0; margin-top: 0.5rem; }
+.empty-hint { font-size: 0.8rem; color: #a7f3d0; font-style: italic; }
+.disclaimer-text { font-size: 0.68rem; color: #a7f3d0; margin-top: 0.6rem; line-height: 1.4; }
 
 .item-card { background: rgba(0,0,0,0.25); border: 1px solid rgba(255,255,255,0.08); border-radius: 8px; padding: 0.75rem; margin-bottom: 0.5rem; font-size: 0.85rem; }
-.tier3-card { border-color: #3b82f6; }
 .card-label { color: #93c5fd; font-weight: 600; }
 .val-text { font-size: 0.85rem; margin: 0.25rem 0; }
 .pre-wrap { white-space: pre-wrap; }
@@ -71,7 +65,6 @@ button { flex: 1; min-width: 120px; padding: 0.65rem; border-radius: 6px; font-s
 .btn-sec { background: #24324f; color: var(--text); }
 .btn-sec:hover { background: #334469; }
 
-.alert-banner { padding: 0.75rem; border-radius: 8px; font-size: 0.75rem; margin-bottom: 1rem; border: 1px solid var(--danger-border); background: var(--danger-bg); color: var(--danger-text); display: none; }
 .error-msg { font-size: 0.75rem; color: #f87171; margin-top: 0.5rem; display: none; }
 .toolbar { border-top: 1px solid var(--border); padding-top: 1rem; display: flex; gap: 0.5rem; flex-wrap: wrap; }
 
@@ -104,7 +97,7 @@ button { flex: 1; min-width: 120px; padding: 0.65rem; border-radius: 6px; font-s
 .chk-label { margin: 0; color: #f8fafc; font-size: 0.75rem; cursor: pointer; }
 
 .card-hint { font-size: 0.75rem; color: var(--sub); }
-.custom-insurer-box { background: #0b0f19; padding: 0.5rem; border-radius: 6px; }
+.custom-insurer-box { background: #0b0f19; padding: 0.5rem; border-radius: 6px; margin-bottom: 0.5rem; }
 .items-list { margin-top: 0.75rem; max-height: 140px; overflow-y: auto; }
 .recovery-box-border { border-top: 1px dashed var(--border); padding-top: 0.5rem; margin-top: 0.5rem; }
 .code-box { background: #000; border: 1px solid #334155; padding: 0.5rem; border-radius: 6px; font-family: monospace; font-size: 0.8rem; color: #38bdf8; word-break: break-all; }
