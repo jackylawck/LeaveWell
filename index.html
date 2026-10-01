@@ -45,15 +45,15 @@
     <div id="guideContent" class="guide-content">
       <div class="guide-step">
         <span class="step-num">1</span>
-        <div id="uiGuideStep1"><strong>搵備份檔</strong>：找出隨身碟或書房之 <code>LeaveWell-Vault-*.json</code> 檔案。</div>
+        <div id="uiGuideStep1"><strong>免密即看</strong>：上方綠色區已<strong>自動顯示</strong>生前所有保險公司；致電官方報出死者全名及身份證號碼即可查詢保單。</div>
       </div>
       <div class="guide-step">
         <span class="step-num">2</span>
-        <div id="uiGuideStep2"><strong>撳匯入</strong>：點擊底部 <span class="highlight-btn">📥 匯入 JSON 檔案</span> 上傳。</div>
+        <div id="uiGuideStep2"><strong>保險箱找卡</strong>：取出家中保險箱內的「實體記憶提示卡」，依照提示拼出約定密語。</div>
       </div>
       <div class="guide-step">
         <span class="step-num">3</span>
-        <div id="uiGuideStep3"><strong>即時查閱</strong>：綠色區<strong>免密碼即時顯示</strong>所有持有之保險公司；若需經紀電話、保單號或手機 PIN，於紅色區輸入密語或紙本 52 碼恢復碼。</div>
+        <div id="uiGuideStep3"><strong>解鎖金庫</strong>：在紅色區輸入密語，即時解鎖經紀電話、保單號碼、實體合約位置與手機 PIN。</div>
       </div>
     </div>
   </div>
@@ -72,27 +72,18 @@
     </div>
   </div>
 
-  <!-- 🔴 第二層：機密金庫（單一密碼／紙本恢復碼） -->
+  <!-- 🔴 第二層：機密金庫（單一家庭密語） -->
   <div class="panel tier-secret">
     <div class="panel-head">
-      <h2 id="uiSecretTitle">🔴 第二層：核心應急金庫（需家庭密語／恢復碼）</h2>
+      <h2 id="uiSecretTitle">🔴 第二層：核心應急金庫（需家庭約定密語）</h2>
       <span class="badge badge-red" id="uiSecretBadge">AES-256 加密</span>
     </div>
 
     <!-- 鎖定狀態：輸入解密 -->
     <div id="secretLockSection">
-      <div class="tab-btn-group">
-        <button class="btn-sec btn-tab active" id="tabUsePass">使用主密語</button>
-        <button class="btn-sec btn-tab" id="tabUseRecovery">使用紙本恢復碼</button>
-      </div>
-
       <div id="modePassphraseBox">
-        <label id="uiPassphraseLabel">輸入約定家庭密語 (Passphrase)：</label>
-        <input type="password" id="passphrase" placeholder="輸入家庭密語">
-      </div>
-      <div id="modeRecoveryBox" class="hidden">
-        <label id="uiRecoveryLabel">輸入紙本 52 碼恢復碼 (Emergency Recovery Code)：</label>
-        <input type="text" id="recoveryCodeInput" placeholder="RC-XXXXX-XXXXX..." class="mono-input">
+        <label id="uiPassphraseLabel">輸入家庭約定密語（參考保險箱提示卡）：</label>
+        <input type="password" id="passphrase" placeholder="輸入約定密語">
       </div>
 
       <div class="btn-row">
@@ -191,23 +182,15 @@
       <textarea id="editMasterNotes" rows="2" placeholder="密碼庫 Master Key 或重要身後交代" class="mb-sm"></textarea>
       
       <div class="flex-row mb-sm">
-        <input type="password" id="editPassphrase" autocomplete="new-password" placeholder="加密主密語 (>= 12 字元)" class="flex-1">
+        <input type="password" id="editPassphrase" autocomplete="new-password" placeholder="設定主密語 (建議 ≥ 12 字元)" class="flex-1">
         <input type="password" id="editConfirmPassphrase" autocomplete="new-password" placeholder="確認主密語" class="flex-1">
       </div>
 
-      <!-- 紙本恢復碼 -->
-      <div class="recovery-box-border">
-        <div class="flex-between mb-sm">
-          <label class="label-yellow" id="uiEditorRecLabel">紙本緊急恢復碼 (忘記密語時唯一解鎖手段)：</label>
-          <button class="btn-sec btn-sm" id="btnRefreshRecovery">重新生成</button>
-        </div>
-        <div id="displayRecoveryCode" class="code-box">尚未生成</div>
-        <div class="flex-row mt-sm align-center">
-          <input type="checkbox" id="chkRecoveryConfirmed" class="w-auto cursor-pointer">
-          <label for="chkRecoveryConfirmed" class="chk-label" id="uiChkRecoveryText">
-            我已完整抄寫此 52 碼恢復碼至紙本，並存於安全地點。
-          </label>
-        </div>
+      <!-- 方案 B：保險箱拼圖提示卡 -->
+      <div class="hint-card-box">
+        <label class="label-yellow" id="uiEditorHintLabel">📝 實體卡提示線索（寫給家人的記憶提示，日後抄在保險箱卡片上）：</label>
+        <input type="text" id="editPassphraseHint" placeholder="例：仔仔出生年(4位) + 媽媽英文名小寫 + 我哋結婚日(4位)" class="mt-sm">
+        <div class="card-hint mt-sm">💡 此提示不會直接包含密碼本身，但可提醒家人如何拼出正確密語。</div>
       </div>
     </div>
 
