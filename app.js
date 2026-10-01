@@ -1,5 +1,5 @@
 /**
- * app.js - 雙層架構控制器 (支援解密載入舊檔重新編輯)
+ * app.js - 雙層架構控制器 (自動快取一開即見 + 支援密語解密載入舊檔再編輯)
  */
 window.LeaveWell = window.LeaveWell || {};
 
@@ -9,6 +9,7 @@ window.LeaveWell = window.LeaveWell || {};
   const { Crypto, I18N } = window.LeaveWell;
   const MAX_FAILS = 5;
   const LOCKOUT_MS = 15 * 60 * 1000;
+  const STORAGE_KEY = "leavewell_saved_vault_v4";
 
   const HK_INSURERS = [
     "友邦保險 (AIA)", "保誠保險 (Prudential)", "宏利金融 (Manulife)", "安盛保險 (AXA)",
@@ -111,11 +112,13 @@ window.LeaveWell = window.LeaveWell || {};
         Crypto.validateSchema(parsed);
 
         memoryVault = parsed;
+        localStorage.setItem(STORAGE_KEY, evt.target.result);
+
         renderPublicDirectory(memoryVault.public_directory);
         lockVault();
 
         document.getElementById("btnExport").disabled = false;
-        alert(currentLang === 'zh' ? "✅ 匯入成功！已顯示第一層保險名冊。" : "✅ Imported successfully! Tier 1 directory loaded.");
+        alert(currentLang === 'zh' ? "✅ 匯入成功！已顯示第一層名冊，並已在此裝置建立安全快取。" : "✅ Imported successfully! Tier 1 directory loaded and cached.");
       } catch (err) {
         alert((currentLang === 'zh' ? "❌ 匯入失敗：" : "❌ Import failed: ") + err.message);
       } finally {
@@ -239,8 +242,6 @@ window.LeaveWell = window.LeaveWell || {};
     }, 1000);
   }
 
-  // ================= 編輯器管理（支援載入舊檔再改） =================
-
   function refreshRecoveryCode() {
     const bytes = crypto.getRandomValues(new Uint8Array(32));
     generatedRecoveryCode = Crypto.uint8ToBase32(bytes);
@@ -289,7 +290,6 @@ window.LeaveWell = window.LeaveWell || {};
     document.getElementById("displayRecoveryCode").innerText = "尚未生成";
   }
 
-  // 核心功能：解密載入舊檔再編輯
   async function loadExistingFileForEditing(e) {
     const file = e.target.files[0];
     if (!file) return;
@@ -357,7 +357,16 @@ window.LeaveWell = window.LeaveWell || {};
         encrypted_vault: encryptedPart
       };
 
-      const blob = new Blob([JSON.stringify(fullPackage, null, 2)], { type: "application/json" });
+      const rawJson = JSON.stringify(fullPackage, null, 2);
+
+      // 自動快取到本機
+      localStorage.setItem(STORAGE_KEY, rawJson);
+      memoryVault = fullPackage;
+      renderPublicDirectory(memoryVault.public_directory);
+      document.getElementById("btnExport").disabled = false;
+
+      // 產生實體下載
+      const blob = new Blob([rawJson], { type: "application/json" });
       const url = URL.createObjectURL(blob);
       const a = document.createElement("a");
       a.href = url;
@@ -369,14 +378,12 @@ window.LeaveWell = window.LeaveWell || {};
       document.getElementById("editorModal").classList.add("hidden");
 
       alert(currentLang === 'zh' 
-        ? "🎉 雙層保險庫打包完成！已下載 JSON 檔案。\n請妥善保存紙本恢復碼及 JSON 檔案。" 
-        : "🎉 Export complete! Please safeguard the downloaded JSON and paper recovery code.");
+        ? "🎉 雙層保險庫打包完成！已下載 JSON 檔案，並已在此裝置儲存安全快取。\n請妥善保存紙本恢復碼及 JSON 檔案。" 
+        : "🎉 Export complete! Saved to local cache and downloaded file.");
     } catch (err) {
       alert("儲存過程發生錯誤：" + err.message);
     }
   }
-
-  // ================= 初始化綁定 =================
 
   window.addEventListener("DOMContentLoaded", () => {
     const sel = document.getElementById("editorInsurerSelect");
@@ -431,10 +438,32 @@ window.LeaveWell = window.LeaveWell || {};
     document.getElementById("btnUnlockVault").addEventListener("click", unlockVault);
     document.getElementById("btnLockVault").addEventListener("click", lockVault);
 
-    document.getElementById("btnOpenEditor").addEventListener("click", () => {
+    document.getElementById("btnOpenEditor").addEventListener("click", async () => {
       document.getElementById("editorModal").classList.remove("hidden");
       if (!generatedRecoveryCode) refreshRecoveryCode();
+
+      // 若有快取且編輯器為空，主動提示可輸入密語載入舊資料再改
+      if (memoryVault && currentEditorItems.length === 0) {
+        const wantLoad = confirm(currentLang === 'zh' ? "偵測到本機已有保險庫資料。是否要輸入密語直接載入舊資料進行修改？" : "Detected active vault. Unlock with passphrase to edit existing data?");
+        if (wantLoad) {
+          const pass = prompt(currentLang === 'zh' ? "請輸入家庭密語以解密編輯：" : "Enter master passphrase:");
+          if (pass) {
+            try {
+              const unlocked = await Crypto.decryptVault(pass, false, memoryVault.encrypted_vault);
+              currentEditorItems = unlocked.policies || [];
+              renderEditorItems();
+              document.getElementById("editDevicePin").value = unlocked.devicePin || "";
+              document.getElementById("editPrimaryEmail").value = unlocked.primaryEmail || "";
+              document.getElementById("editMasterNotes").value = unlocked.masterNotes || "";
+              alert(currentLang === 'zh' ? "✅ 舊資料已載入！修改完成後重新設定密語匯出即可。" : "✅ Loaded! Update and save.");
+            } catch (err) {
+              alert((currentLang === 'zh' ? "❌ 解密失敗：" : "❌ Failed: ") + err.message);
+            }
+          }
+        }
+      }
     });
+
     document.getElementById("btnCloseEditor").addEventListener("click", () => {
       wipeEditorFields();
       document.getElementById("editorModal").classList.add("hidden");
@@ -498,10 +527,23 @@ window.LeaveWell = window.LeaveWell || {};
     });
 
     window.addEventListener("beforeunload", () => {
-      memoryVault = null;
       decryptedPayload = null;
       lockVault();
     });
+
+    // 💡 開啟頁面時自動載入本機快取
+    const cachedVaultRaw = localStorage.getItem(STORAGE_KEY);
+    if (cachedVaultRaw) {
+      try {
+        const cached = JSON.parse(cachedVaultRaw);
+        Crypto.validateSchema(cached);
+        memoryVault = cached;
+        renderPublicDirectory(memoryVault.public_directory);
+        document.getElementById("btnExport").disabled = false;
+      } catch (e) {
+        localStorage.removeItem(STORAGE_KEY);
+      }
+    }
 
     setLanguage(currentLang);
   });
