@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, shrink-to-fit=no, viewport-fit=cover">
   
   <!-- 🔍 基礎 SEO 與 Google 驗證 -->
-  <title>🛡️ 留愛心安 LeaveWell | 零知識家庭應急資產金庫 (Zero-Knowledge Emergency Vault)</title>
+  <title>🛡️️ 留愛心安 LeaveWell | 零知識家庭應急資產金庫 (Zero-Knowledge Emergency Vault)</title>
   <meta name="description" content="留愛心安 LeaveWell 是一款純本地端、零後端伺服器的家庭應急資產與保險導航保險庫。透過雙層架構實現生前隱私隔離與身後即時官方索償導航，遵循 ISO 27001 / 27701 安全標準與隱私設計。">
   <meta name="keywords" content="留愛心安, LeaveWell, 家庭保險庫, 應急資產導航, 零知識證明, 身後規劃, 數位遺產, AES-256, 離線保險庫, ISO27001, 隱私設計, PWA">
   <meta name="author" content="LeaveWell Governance Team">
@@ -44,7 +44,7 @@
   <meta name="theme-color" content="#0b0f19">
   <meta name="application-name" content="留愛心安 LeaveWell">
 
-  <!-- 🛡️ 企業級安全策略：嚴格 CSP 封鎖所有外部連線與未授權資源 -->
+  <!-- 🛡️ 企業級安全策略：嚴格 CSP（已移除無效的 frame-ancestors 避免 Console 警告） -->
   <meta http-equiv="Content-Security-Policy" content="
     default-src 'self';
     script-src 'self' 'unsafe-inline';
@@ -54,7 +54,6 @@
     object-src 'none';
     base-uri 'self';
     form-action 'none';
-    frame-ancestors 'none';
   ">
   <meta http-equiv="Permissions-Policy" content="accelerometer=(), gyroscope=(), microphone=(), camera=(), geolocation=(), payment=()">
   <meta name="referrer" content="strict-origin-when-cross-origin">
@@ -81,7 +80,7 @@
     <span id="lockTimer" class="badge badge-red hidden">會話倒數: 180s</span>
   </div>
 
-<!-- 🏛️ 法規合規橫額 -->
+  <!-- 🏛️ 法規合規橫額 -->
   <div class="compliance-banner" id="btnOpenComplianceModal">
     <div class="compliance-badge-group">
       <span class="c-badge" id="uiBadgeIso">🛡️ ISO 27001/27701 控制項對齊</span>
@@ -256,7 +255,7 @@
   </div>
 </div>
 
-<!-- 🏛️ 法規治理與隱私架構說明彈窗 -->
+<!-- 🏛️️ 法規治理與隱私架構說明彈窗 -->
 <div id="complianceModal" class="modal-backdrop hidden">
   <div class="modal-box">
     <div class="modal-header">
@@ -282,27 +281,15 @@
   </div>
 </div>
 
-      <div class="item-card border-red">
-        <h3 style="color:#f87171; font-size:0.85rem; margin-bottom:0.3rem;">3. 零知識架構與責任聲明</h3>
-        <p style="font-size:0.75rem; color:#cbd5e1; line-height:1.5;">
-          本軟體按「現狀」（AS IS）於 MIT 授權條款釋出。開發者在數學與架構層面均無後門或代管密鑰，密語及實體提示卡須由使用者自行妥善保管於安全保險箱。
-        </p>
-      </div>
-    </div>
-  </div>
-</div>
-
 <script src="./i18n.js"></script>
 <script src="./crypto.js"></script>
 <script src="./app.js"></script>
 <script>
-  // 註冊 PWA Service Worker (若瀏覽器支援)
   if ('serviceWorker' in navigator) {
     window.addEventListener('load', () => {
       navigator.serviceWorker.register('./sw.js').catch(() => {});
     });
   }
-  // 治理彈窗開關控制
   document.getElementById('btnOpenComplianceModal').addEventListener('click', () => {
     document.getElementById('complianceModal').classList.remove('hidden');
   });
