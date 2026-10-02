@@ -21,6 +21,7 @@
   2. **🔴 第二層：機密金庫（單一家庭密語）**：涵蓋專屬經紀電話、保單編號、實體合約位置、手機 PIN 及主電郵線索。採用 **AES-GCM-256 + PBKDF2 (600,000 次疊代)** 工業標準加密。
 - **人性化實體提示卡 (Memory Clue Card)**：徹底拋棄反人性的 52 碼隨機亂碼，改用「保險箱記憶線索卡」。卡片只記錄家庭共同記憶拼圖提示，即便外人撿到也無法破解，家人一睇秒懂。
 - **本地免密快取 (Instant Local Cache)**：本機完成設定或匯入後，加密檔案自動快取於本地瀏覽器。日後家人打開死者手機或常用電腦，**免找檔案、免匯入，第一層保險名冊即刻呈現在眼前**。
+- **PWA 行動裝置體驗**：支援 Progressive Web App，可一鍵「加入主畫面」離線使用，兼具原生 App 般的操作體驗與零伺服器安全保障。
 - **密語解密反填編輯 (Load & Edit)**：日後增減保單或修改資料時，直接載入舊檔並輸入密語，所有公開與機密資料自動解密反填至編輯器，隨時修改並重新打包。
 - **動態記憶體防禦 (Memory Safety)**：本機無明文留存，關閉視窗即時抹除金鑰記憶體；內置 180 秒會話超時鎖定與連續 5 次錯誤強制鎖定 15 分鐘機制。
 
@@ -35,6 +36,17 @@
 | **提示卡遭外人偷看** | ✅ 完全防禦 | 卡片僅記錄記憶拼圖（如：仔仔出生年+紀念日），無密碼明文，外人不知家庭隱私無法拼湊。 |
 | **離線暴力破解密語** | ✅ 高度防禦 | PBKDF2-SHA256 600,000 次疊代，搭配錯誤鎖定防護，抵禦離線字典攻擊。 |
 | **執行檔/前端被替換 (XSS)** | ⚠️ 邊界限制 | 純前端架構無法防禦 HTML 本體被惡意置換，建議將檔案備份於防寫唯讀隨身碟。 |
+
+---
+
+### 🏛️ 全球法規治理與國際資安標準對齊 (Governance & Standards)
+
+本專案依循嚴謹的資訊治理原則，對全球相關法規之適用性與標準映射界定如下：
+
+- **EU AI Act / 國家網信辦 / ISO 42001 (AIMS) — 明確排除**：本專案為純確定性（Deterministic）密碼學工具，不含任何機器學習模型或自動化決策系統，**依法不適用 (Out of Scope)**。
+- **歐盟 GDPR (Art. 2(2)(c)) & 香港 PDPO (第 52 條) — 家用豁免**：純粹用於個人及家庭事務，系統無伺服器、無遙測收集，開發者非資料控制者。
+- **ISO/IEC 27001:2022 & ISO/IEC 27701:2019 控制項對齊**：落實 A.8.24 密碼學標準、A.8.10 記憶體資訊即時清除，以及 Privacy by Design 零外部連線架構 (`connect-src 'none'`)。
+- 詳細合規分析請參閱 [GOVERNANCE.md](GOVERNANCE.md) 與 [PRIVACY.md](PRIVACY.md)。
 
 ---
 
@@ -68,18 +80,18 @@
 ```text
 ┌───────────────────────────────────────────────────────────────────┐
 │                     🛡️ 留愛心安 · LeaveWell                        │
-│                   家庭緊急應急資產導航卡 (存根)                     │
+│                   家庭緊急應急資產導航卡 (存根)                      │
 ├───────────────────────────────────────────────────────────────────┤
-│ 1. 檔案位置：客廳專用隨身碟 / 死者常用電腦瀏覽器                    │
+│ 1. 檔案位置：客廳專用隨身碟 / 死者常用電腦瀏覽器                      │
 │                                                                   │
-│ 2. 第一步（免密碼即開）：                                         │
-│    打開網頁，頂部綠色區已列出生前所有保險公司。                     │
-│    直接致電官方索償部，報出死者英文全名及身份證號碼即可查單。       │
+│ 2. 第一步（免密碼即開）：                                            │
+│    打開網頁，頂部綠色區已列出生前所有保險公司。                       │
+│    直接致電官方索償部，報出死者英文全名及身份證號碼即可查單。          │
 │                                                                   │
-│ 3. 第二步（解鎖經紀電話及手機 PIN）：                              │
-│    在紅色金庫區輸入約定密語。                                      │
+│ 3. 第二步（解鎖經紀電話及手機 PIN）：                                │
+│    在紅色金庫區輸入約定密語。                                       │
 │                                                                   │
-│ 💡【家庭密語線索提示】：                                          │
+│ 💡【家庭密語線索提示】：                                             │
 │    [ 仔仔出生年份(4位) + 媽媽英文名小寫 + 我們結婚紀念日(4位) ]      │
 │    （例：2020mary0520）                                           │
 └───────────────────────────────────────────────────────────────────┘
@@ -102,6 +114,7 @@
 
 * **Human-Centric Memory Clue Card**: Replaces awkward, error-prone 52-char random codes with a physical clue card stored in a home safe. The card only contains memory puzzle hints that only family members can decipher.
 * **Instant Local Cache**: Once configured, the vault is securely cached in local storage. Family members opening the app on the deceased's personal device will see the Tier 1 directory immediately without having to locate backup files.
+* **Progressive Web App (PWA)**: Installable directly to home screens on iOS, Android, and desktop for an app-like offline experience.
 * **Load & Edit Workflow**: Easily update records by loading the existing JSON and entering the passphrase. Data is decrypted and autofilled into the editor for seamless updates.
 * **In-Memory Protection**: Zero plaintext persisted to disk. Features 180-second session auto-lock and exponential lockout after 5 consecutive failed attempts.
 
@@ -119,6 +132,15 @@
 
 ---
 
+### 🏛️ Global Governance & Compliance Alignment
+
+* **EU AI Act / CAC Algorithm Regulations / ISO 42001 (AIMS)**: **Explicitly Out of Scope**. LeaveWell is a deterministic, rule-based cryptographic tool without machine learning or automated decision-making.
+* **GDPR (Art. 2(2)(c)) & HK PDPO (Section 52)**: Covered under the **Household Exemption**. The developer operates zero backends, collects zero telemetry, and is not a Data Controller.
+* **ISO/IEC 27001 & ISO/IEC 27701 Mapping**: Adheres to A.8.24 (Cryptography), A.8.10 (Information Deletion), and strict Privacy-by-Design (`connect-src 'none'`).
+* See [GOVERNANCE.md](GOVERNANCE.md) and [PRIVACY.md](PRIVACY.md) for full compliance disclosures.
+
+---
+
 ### 🚀 Usage Guide
 
 1. **Create / Edit**: Open `index.html` or visit [GitHub Pages](https://jackylawck.github.io/LeaveWell/). Click **"⚙️ Create / Edit Vault"**.
@@ -129,8 +151,17 @@
 
 ---
 
+## ⚖️ Governance, Privacy & Legal Boundaries
+
+* [GOVERNANCE.md](GOVERNANCE.md): 治理架構、ISO 27001/27701 控制項映射及 EU AI Act 負向排除聲明。
+* [PRIVACY.md](PRIVACY.md): 零知識架構隱私政策與免責聲明。
+* [LICENSE](https://github.com/jackylawck/LeaveWell/blob/main/LICENSE): MIT 開源授權條款。
+
+---
+
 ## 📜 License
 
-Distributed under the [MIT License](https://www.google.com/search?q=LICENSE).
+Distributed under the [MIT License](https://github.com/jackylawck/LeaveWell/blob/main/LICENSE).
+
 
 
