@@ -256,30 +256,31 @@
   </div>
 </div>
 
-<!-- 🏛️ 法規治理與隱私架構說明彈窗 (Compliance Modal) -->
+<!-- 🏛️ 法規治理與隱私架構說明彈窗 -->
 <div id="complianceModal" class="modal-backdrop hidden">
   <div class="modal-box">
     <div class="modal-header">
-      <h2>⚖️ 留愛心安 ‧ 全球法規治理與資安架構聲明</h2>
+      <h2 id="uiModalCompTitle">⚖️ 留愛心安 ‧ 全球法規治理與資安架構聲明</h2>
       <button id="btnCloseCompliance" class="btn-close">✕</button>
     </div>
     <div class="compliance-modal-content">
       <div class="item-card border-blue mb-sm">
-        <h3 style="color:#38bdf8; font-size:0.85rem; margin-bottom:0.3rem;">1. 負向範圍排除聲明 (Negative Scope Exclusion)</h3>
-        <p style="font-size:0.75rem; color:#cbd5e1; line-height:1.5;">
-          • <strong>EU AI Act / 國家網信辦 / ISO 42001 (AIMS)</strong>：<strong>明確不適用 (Out of Scope)</strong>。本系統為純確定性（Deterministic）密碼學前端工具，無任何機器學習演算法、生成式 AI 或自動決策模組，依法豁免相關監管義務。<br>
-          • <strong>歐盟 GDPR (Art. 2(2)(c)) & 香港 PDPO (第 52 條)</strong>：<strong>家用豁免 (Household Exemption)</strong>。本系統由使用者純粹用於個人及家庭事務，作者與系統不收集、傳輸或持有任何個資，非資料控制者。
-        </p>
+        <h3 style="color:#38bdf8; font-size:0.85rem; margin-bottom:0.3rem;" id="uiModalSec1Title">1. 負向範圍排除聲明 (Negative Scope Exclusion)</h3>
+        <p style="font-size:0.75rem; color:#cbd5e1; line-height:1.5;" id="uiModalSec1Content"></p>
       </div>
 
       <div class="item-card border-green mb-sm">
-        <h3 style="color:#34d399; font-size:0.85rem; margin-bottom:0.3rem;">2. 國際資安與隱私標準控制項對齊 (ISO 27001 / 27701)</h3>
-        <p style="font-size:0.75rem; color:#cbd5e1; line-height:1.5;">
-          • <strong>A.8.24 密碼學控制</strong>：使用 NIST 認證之 AES-GCM-256 加密與 PBKDF2 (600,000 次疊代)。<br>
-          • <strong>A.8.10 資訊刪除</strong>：會話閒置 180 秒自動鎖定，關閉視窗即時清除記憶體明文。<br>
-          • <strong>Privacy by Design & Default</strong>：CSP 宣告 <code>connect-src 'none'</code>，徹底封死任何外網數據傳輸。
-        </p>
+        <h3 style="color:#34d399; font-size:0.85rem; margin-bottom:0.3rem;" id="uiModalSec2Title">2. 國際資安與隱私標準控制項對齊 (ISO 27001 / 27701)</h3>
+        <p style="font-size:0.75rem; color:#cbd5e1; line-height:1.5;" id="uiModalSec2Content"></p>
       </div>
+
+      <div class="item-card border-red">
+        <h3 style="color:#f87171; font-size:0.85rem; margin-bottom:0.3rem;" id="uiModalSec3Title">3. 零知識架構與責任聲明</h3>
+        <p style="font-size:0.75rem; color:#cbd5e1; line-height:1.5;" id="uiModalSec3Content"></p>
+      </div>
+    </div>
+  </div>
+</div>
 
       <div class="item-card border-red">
         <h3 style="color:#f87171; font-size:0.85rem; margin-bottom:0.3rem;">3. 零知識架構與責任聲明</h3>
