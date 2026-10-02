@@ -1,5 +1,5 @@
 /**
- * app.js - 雙層架構控制器 (方案 B：保險箱提示卡版)
+ * app.js - 雙層架構控制器 (方案 B：保險箱提示卡版 + 全面雙語合規同步)
  */
 window.LeaveWell = window.LeaveWell || {};
 
@@ -59,19 +59,44 @@ window.LeaveWell = window.LeaveWell || {};
     localStorage.setItem("vault_lang", lang);
     const t = I18N[lang];
 
+    // 頂部應用標題與提示
     document.getElementById("uiAppTitle").innerText = t.appTitle;
     document.getElementById("uiAppSub").innerText = t.appSub;
     document.getElementById("uiSessionHint").innerText = t.sessionHint;
 
+    // 🏛️ 合規橫額標籤與鏈接同步
+    if (document.getElementById("uiBadgeIso")) document.getElementById("uiBadgeIso").innerText = t.badgeIso;
+    if (document.getElementById("uiBadgeGdpr")) document.getElementById("uiBadgeGdpr").innerText = t.badgeGdpr;
+    if (document.getElementById("uiBadgePdpo")) document.getElementById("uiBadgePdpo").innerText = t.badgePdpo;
+    if (document.getElementById("uiBadgeAi")) document.getElementById("uiBadgeAi").innerText = t.badgeAi;
+    if (document.getElementById("uiLinkCompliance")) document.getElementById("uiLinkCompliance").innerText = t.linkCompliance;
+
+    // 🏛️ 合規說明彈窗內文同步
+    if (document.getElementById("uiModalCompTitle")) document.getElementById("uiModalCompTitle").innerText = t.modalCompTitle;
+    if (document.getElementById("uiModalSec1Title")) document.getElementById("uiModalSec1Title").innerText = t.modalSec1Title;
+    if (document.getElementById("uiModalSec1Content")) document.getElementById("uiModalSec1Content").innerHTML = t.modalSec1Content;
+    if (document.getElementById("uiModalSec2Title")) document.getElementById("uiModalSec2Title").innerText = t.modalSec2Title;
+    if (document.getElementById("uiModalSec2Content")) document.getElementById("uiModalSec2Content").innerHTML = t.modalSec2Content;
+    if (document.getElementById("uiModalSec3Title")) document.getElementById("uiModalSec3Title").innerText = t.modalSec3Title;
+    if (document.getElementById("uiModalSec3Content")) document.getElementById("uiModalSec3Content").innerHTML = t.modalSec3Content;
+
+    // 💡 家人應急指南步驟與折疊按鈕同步
     document.getElementById("uiGuideTitle").innerText = t.guideTitle;
     document.getElementById("uiGuideStep1").innerHTML = t.guideStep1;
     document.getElementById("uiGuideStep2").innerHTML = t.guideStep2;
     document.getElementById("uiGuideStep3").innerHTML = t.guideStep3;
+    const btnToggleGuide = document.getElementById("btnToggleGuide");
+    if (btnToggleGuide) {
+      const isHidden = document.getElementById("guideContent").classList.contains("hidden");
+      btnToggleGuide.innerText = isHidden ? t.guideExpand : t.guideCollapse;
+    }
 
+    // 第一層公開名冊介面文字
     document.getElementById("uiPublicTitle").innerText = t.publicTitle;
     document.getElementById("uiPublicBadge").innerText = t.publicBadge;
     document.getElementById("uiPublicDisclaimer").innerText = t.publicDisclaimer;
 
+    // 第二層機密金庫介面文字
     document.getElementById("uiSecretTitle").innerText = t.secretTitle;
     document.getElementById("uiSecretBadge").innerText = t.secretBadge;
     document.getElementById("uiPassphraseLabel").innerText = t.passphraseLabel;
@@ -79,11 +104,13 @@ window.LeaveWell = window.LeaveWell || {};
     document.getElementById("btnUnlockVault").innerText = t.unlockBtn;
     document.getElementById("btnLockVault").innerText = t.lockBtn;
 
+    // 解鎖後詳細欄位標籤
     document.getElementById("uiSecPoliciesTitle").innerText = t.policiesTitle;
     document.getElementById("uiDevicePinTitle").innerText = t.devicePinTitle;
     document.getElementById("uiEmailTitle").innerText = t.emailTitle;
     document.getElementById("uiNotesTitle").innerText = t.notesTitle;
 
+    // 底部工具列按鈕
     document.getElementById("btnTriggerImport").innerText = t.btnImport;
     document.getElementById("btnExport").innerText = t.btnExport;
     document.getElementById("btnOpenEditor").innerText = t.btnEditor;
