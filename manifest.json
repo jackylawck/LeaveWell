@@ -1,0 +1,23 @@
+{
+  "name": "留愛心安 LeaveWell",
+  "short_name": "LeaveWell",
+  "description": "零知識家庭應急資產與保險導航保險庫",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#0b0f19",
+  "theme_color": "#0b0f19",
+  "icons": [
+    {
+      "src": "./LeaveWell192icon.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "./LeaveWell512icon.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}
