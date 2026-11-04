@@ -1,6 +1,7 @@
 /**
  * solace.js - 留愛心安 · 心靈燈塔與全人安撫終端 (Terminal of Universal Solace)
  * 100% Client-Side Pure JS / 中英雙語溫柔美學 / 跨族群生死心理支持模組
+ * [已修復 Console 淺色/深色背景高對比閱讀問題]
  */
 (function () {
     'use strict';
@@ -8,7 +9,7 @@
     var MONO = '"SFMono-Regular", Consolas, "Liberation Mono", Menlo, Courier, monospace';
     var SERIF = '"Noto Serif TC", "Source Han Serif TC", Georgia, serif';
 
-    // 🎨 溫潤心安色譜 (Gentle & Calming Aesthetic)
+    // 🎨 黑白雙模式相容色譜 (High-Contrast Universal Palette)
     var S = {
         title: 'background: #0b1120; color: #7dd3fc; font-family: ' + MONO + '; font-size: 13px; font-weight: 700; padding: 8px 14px; border-left: 5px solid #38bdf8; border-top: 1px solid #1e293b; border-right: 1px solid #1e293b; border-radius: 4px 4px 0 0; display: block;',
         sub: 'background: #0b1120; color: #a7f3d0; font-family: ' + SERIF + '; font-size: 11.5px; padding: 6px 14px; border-left: 5px solid #34d399; border-bottom: 1px solid #1e293b; border-right: 1px solid #1e293b; border-radius: 0 0 4px 4px; display: block; line-height: 1.6;',
@@ -16,8 +17,9 @@
         boxHope: 'background: #1e1b4b; color: #e0e7ff; font-family: ' + SERIF + '; font-size: 12px; line-height: 1.85; padding: 14px 18px; border-left: 4px solid #818cf8; border-top: 1px solid #312e81; border-bottom: 1px solid #312e81; border-right: 1px solid #312e81; border-radius: 6px; display: block; white-space: pre-wrap;',
         quote: 'background: #0f172a; color: #cbd5e1; font-family: ' + SERIF + '; font-size: 11.5px; font-style: italic; line-height: 1.8; padding: 12px 16px; border-left: 3px solid #94a3b8; border-radius: 4px; display: block;',
         cliBar: 'background: #0b1120; color: #86efac; font-family: ' + MONO + '; font-size: 11px; font-weight: 600; padding: 7px 14px; border: 1px solid #1e293b; border-left: 5px solid #10b981; border-radius: 4px; display: block;',
-        cmdKey: 'background: #1e293b; color: #fde68a; font-weight: 700; font-family: ' + MONO + '; padding: 2px 7px; border-radius: 3px; border: 1px solid #334155;',
-        cmdDesc: 'background: transparent; color: #cbd5e1; font-family: ' + MONO + '; padding: 1px 6px;'
+        // 💡 關鍵修復：雙色膠囊卡片，自帶專屬深色背景，白底黑底 Console 均清晰
+        cmdKey: 'background: #1e293b; color: #fde68a; font-weight: 700; font-family: ' + MONO + '; padding: 3px 8px; border-radius: 4px 0 0 4px; border: 1px solid #334155; display: inline-block;',
+        cmdDesc: 'background: #0f172a; color: #f8fafc; font-family: ' + SERIF + '; padding: 3px 10px; border-radius: 0 4px 4px 0; border: 1px solid #334155; border-left: none; display: inline-block; line-height: 1.5;'
     };
 
     function renderSolaceTerminal() {
@@ -26,11 +28,11 @@
         console.log('');
 
         var introText = [
-            '「死亡不是真正的告別，遺忘才是。',
+            '「死亡不是真正的告別。',
             ' 無論你是滿懷牽掛的立庫者、痛失至親的家屬、疲憊不堪的照顧者，抑或只是偶然路過的旅人——',
-            ' 請深呼吸。悲傷會如潮水退去，留在沙灘上的愛與秩序，會一生托住我們的生活。」',
+            ' 請深呼吸。悲傷會如潮水退去，留在岸上的愛，會一生托住我們。」',
             '',
-            '“Death is not the true departure; forgetting is.',
+            '“Death is not the true departure',
             ' Whether you are preparing with foresight, grieving a beloved, caring with exhaustion,',
             ' or simply passing by—take a gentle breath.',
             ' Grief recedes like waves, but the love and order left behind will shelter us all.”'
@@ -58,17 +60,17 @@
     window.solace = Object.freeze({
         help: function () {
             console.log('%c[ 心靈指引指令集 // SOLACE COMMAND SUITE ]', S.sub);
-            console.log('%csolace.grieving()%c  - 【給喪親家屬】哭過之後，他留下的愛依然托住你 / To the Bereaved Family', S.cmdKey, S.cmdDesc);
-            console.log('%csolace.departing()%c - 【給即將遠行的旅人】卸下牽掛，你已圓滿打點一切 / To Those Approaching the End', S.cmdKey, S.cmdDesc);
-            console.log('%csolace.pillar()%c    - 【給未雨綢繆的家庭支柱】化焦慮為安心，這不是觸霉頭 / To Family Guardians', S.cmdKey, S.cmdDesc);
-            console.log('%csolace.carer()%c     - 【給疲憊的病患照顧者】看見你的辛勞，請給自己一個擁抱 / To Exhausted Carers', S.cmdKey, S.cmdDesc);
-            console.log('%csolace.hope()%c      - 【給心靈困頓、想放棄的人】溫柔挽留與安心傾聽熱線 / A Gentle Embrace & Hotlines', S.cmdKey, S.cmdDesc);
-            console.log('%csolace.living()%c    - 【給健康常人】向死而生，今晚抱抱身邊重要的人 / Memento Mori: To the Living', S.cmdKey, S.cmdDesc);
-            console.log('%csolace.breathe()%c   - 啟動 60 秒「月光深呼吸練習」 / 60s Moonlight Calming Breath', S.cmdKey, S.cmdDesc);
-            console.log('%csolace.letter()%c    - 閱讀《致留在人間的你》告白信 / A Letter to Those Who Remain', S.cmdKey, S.cmdDesc);
-            console.log('%csolace.stars()%c     - 星塵哲思：卡爾·薩根視角的永恆相遇 / Cosmic Solace: We Are Stardust', S.cmdKey, S.cmdDesc);
-            console.log('%csolace.audit()%c     - 檢視金庫為你建立的「三道愛的防線」 / The Three Lines of Love & Order', S.cmdKey, S.cmdDesc);
-            console.log('%csolace.provenance()%c- 檢索持有人數位簽署與存證認證鏈 / Cryptographic Identity Anchors', S.cmdKey, S.cmdDesc);
+            console.log('%csolace.grieving()%c【給喪親家屬】哭過之後，他留下的愛依然托住你 / To the Bereaved Family', S.cmdKey, S.cmdDesc);
+            console.log('%csolace.departing()%c【給即將遠行的旅人】卸下牽掛，你已圓滿打點一切 / To Those Approaching the End', S.cmdKey, S.cmdDesc);
+            console.log('%csolace.pillar()%c【給未雨綢繆的家庭支柱】化焦慮為安心，這不是觸霉頭 / To Family Guardians', S.cmdKey, S.cmdDesc);
+            console.log('%csolace.carer()%c【給疲憊的病患照顧者】看見你的辛勞，請給自己一個擁抱 / To Exhausted Carers', S.cmdKey, S.cmdDesc);
+            console.log('%csolace.hope()%c【給心靈困頓、想放棄的人】溫柔挽留與安心傾聽熱線 / A Gentle Embrace & Hotlines', S.cmdKey, S.cmdDesc);
+            console.log('%csolace.living()%c【給健康常人】向死而生，今晚抱抱身邊重要的人 / Memento Mori: To the Living', S.cmdKey, S.cmdDesc);
+            console.log('%csolace.breathe()%c啟動 60 秒「月光深呼吸練習」 / 60s Moonlight Calming Breath', S.cmdKey, S.cmdDesc);
+            console.log('%csolace.letter()%c閱讀《致留在人間的你》告白信 / A Letter to Those Who Remain', S.cmdKey, S.cmdDesc);
+            console.log('%csolace.stars()%c星塵哲思：卡爾·薩根視角的永恆相遇 / Cosmic Solace: We Are Stardust', S.cmdKey, S.cmdDesc);
+            console.log('%csolace.audit()%c檢視金庫為你建立的「三道愛的防線」 / The Three Lines of Love & Order', S.cmdKey, S.cmdDesc);
+            console.log('%csolace.provenance()%c檢索持有人數位簽署與存證認證鏈 / Cryptographic Identity Anchors', S.cmdKey, S.cmdDesc);
             return '請於下方輸入任一指令並按 Enter / Type any command above to proceed.';
         },
 
@@ -79,13 +81,13 @@
                 '',
                 '親愛的你：',
                 '此刻的世界可能是一片寂靜的空白，伴隨著無法呼吸的鈍痛。',
-                '請記住：悲傷沒有既定的進度表，眼淚不是脆弱，而是「愛無處安放」的模樣。',
+                '請記住：悲傷是人之常情，眼淚不是脆弱，想哭就大哭一場吧!',
                 '',
                 '不要逼自己今天就表現得堅強。',
                 '他生前花心思建起這座金庫，就是為了替此刻手足無措的你，擋下外界所有的冰冷繁瑣。',
                 '第一層名冊免密碼就能查，保險箱裡的線索藏著你們專屬的默契。',
-                '慢慢來，一口水、一頓飯，一次只做一件事。',
-                '他的肉身雖然先行離席，但他留下的深情與秩序，依然在此刻安靜地護著你。',
+                '慢慢來，你可以的，加油!',
+                '他的肉身雖然先行離席，但他留下的深情，依然在此刻安靜地護著你。',
                 '',
                 '(Grief has no timeline. Tears are simply love with no place to go. Take steady breaths; the order and love he left behind will carry you through, step by gentle step.)'
             ].join('\n');
@@ -98,7 +100,7 @@
             var text = [
                 '【給即將走完航程的旅人 // To Those Approaching the Final Port】',
                 '',
-                '辛苦了一生的長者與朋友：',
+                '辛苦了一生的朋友：',
                 '面對未知與離席，心中有牽掛、有遺憾、有對至親的不捨，都是人之常情。',
                 '',
                 '但請看看這座保險庫——你已經在理性與清醒之時，為家人做好了最周全的防護。',
@@ -107,7 +109,7 @@
                 '',
                 '請放下內疚，也請放下焦慮。',
                 '人間草木，春生秋落，生命的圓滿不在於長度，而在於愛過的厚度。',
-                '安心歇息吧，你所播下的愛與善意，早已深植在孩子與至親的生命裡，生生不息。',
+                '安心歇息吧，你所播下的愛與善意，早已深植在至親的生命裡，生生不息。',
                 '',
                 '(You have prepared everything with extraordinary dignity and love. Lay down the burdens, forgive what was imperfect, and rest in profound peace. Your legacy of love is complete.)'
             ].join('\n');
@@ -120,15 +122,15 @@
             var text = [
                 '【給未雨綢繆的家庭支柱 // To the Family Guardians】',
                 '',
-                '正在為事業打拼、為一家老小撐傘的你：',
-                '華人社會總覺得談生死「觸霉頭」，但真正的勇者，敢於正視人生的無常。',
+                '正在為事業打拼、為一家撐傘的你：',
+                '華人社會總會避談生死，但真正的勇者，敢於正視人生的無常。',
                 '',
                 '你今天花時間整理這座金庫，不是預言不幸，而是「責任的極致表現」。',
                 '因為你深知：天有不測風雲，一旦意外比明天先到，你最不希望看到家人被繁瑣程序壓垮。',
                 '當這份備份妥善鎖進保險箱的那一刻，你的家庭抗風險韌性就提升了一整個層級。',
                 '',
-                '放下隱隱的生存焦慮吧！認真準備身後事的人，才能最踏實、最無懼地活在每一個當下。',
-                '走出房門，繼續開朗地為家人做一頓晚飯。你做得非常出色！',
+                '放下生存焦慮，認真準備身後事的人，才能最踏實、最無懼地活在每一個當下。',
+                '走出房門，繼續開朗地陪伴家人吃一頓飯。你做得好好了！',
                 '',
                 '(Preparing for the inevitable is the highest form of love and rational foresight. With everything secured, live today with boundless courage and peace.)'
             ].join('\n');
@@ -142,11 +144,11 @@
                 '【給日夜照料病榻的照顧者 // To the Weary Caregivers】',
                 '',
                 '無比辛勞的朋友：',
-                '長期陪伴病患，你看著生命一點點消逝，內心常承受著「預期性悲傷」與體力的雙重透支。',
+                '長期陪伴病患，你看著生命一點點消逝，內心常承受著悲傷與體力的雙重透支。',
                 '有時候感到煩躁或想逃跑，請千萬不要自責——那只是你的心力已經抵達極限。',
                 '',
                 '你也是個平凡人，你需要被關心，你也需要被擁抱。',
-                '這座金庫的意義，也是為了在未來某一刻，幫你省下在各機構間奔波的千頭萬緒。',
+                '這座金庫的意義，也是為了在未來某一刻，幫助大家省下在各機構間奔波的千頭萬緒。',
                 '今天哪怕只給自己 10 分鐘，喝一杯溫水，閉上雙眼，安頓一下自己。',
                 '你已經付出了無可挑剔的愛與耐心，謝謝你如此溫柔地守護著另一個生命。',
                 '',
@@ -156,7 +158,7 @@
             return '🍵 辛苦了，請記得抱抱自己 // You matter just as much. Rest gently.';
         },
 
-        // 5. 給陷入絕望、想過放棄的人（危機干預）
+        // 5. 給陷入絕望、想過放棄的人
         hope: function () {
             var text = [
                 '【給此刻心靈困頓、感到極度疲憊的你 // A Safe Harbor of Hope】',
@@ -167,7 +169,6 @@
                 '',
                 '生命的泥濘有時真的重到令人窒息，我們完全理解那種「想結束痛苦」的渴望。',
                 '但請相信：你想結束的是「長期的痛苦與孤單」，而不是生命本身。',
-                '你不是這世界的負擔，你的存在本身，就是一個尚未說完的故事。',
                 '',
                 '哪怕此時此刻身邊沒有人理解你，這世界上依然有願意安靜聽你說話的人。',
                 '給自己一個機會，撥個通話，讓我們分擔一點你心底的重量：',
@@ -208,7 +209,7 @@
         breathe: function () {
             if (breathOverlay) {
                 removeBreathOverlay();
-                console.log('%c[ 呼吸練習已結束 // Breathing session concluded ]', 'color:#86efac; font-weight:bold;');
+                console.log('%c[ 呼吸練習已結束 // Breathing session concluded ]', 'background:#064e3b; color:#a7f3d0; padding:2px 8px; border-radius:3px; font-weight:bold;');
                 return '已恢復常態 / Restored.';
             }
 
